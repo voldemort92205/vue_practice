@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import DieComponent from './DieComponent.vue'
 import {nanoid} from 'nanoid'
 
@@ -40,12 +40,15 @@ const checkEndGame = () => {
 }
 
 const holdDice = (id) => {
-  dice.forEach ((item) => {
-    if (item.value.id == id) {
-      item.value.isHeld = !item.value.isHeld
-    }
-  })
-  checkEndGame ();
+  if (tenzies.value == ROLL) {
+    // only update if not end of game!!
+    dice.forEach ((item) => {
+      if (item.value.id == id) {
+        item.value.isHeld = !item.value.isHeld
+      }
+    })
+    checkEndGame ();
+  }
 }
 
 const dice = allNewDice()
@@ -65,6 +68,12 @@ const updateDice = () => {
     tenzies.value = ROLL
   } 
 }
+
+const buttonClass = computed (() => ({
+  "die-reroller": tenzies.value == ROLL,
+  "die-new-game": tenzies.value == WIN,
+  "die-button": true,
+}))
 </script>
 
 <template>
@@ -81,7 +90,7 @@ const updateDice = () => {
         @holdDice="() => {holdDice(oneDie.value.id)}"
     />
   </div>
-  <button class="die-reroller" @click="updateDice">
+  <button :class="buttonClass" @click="updateDice">
     {{tenzies}}
   </button>
 </template>

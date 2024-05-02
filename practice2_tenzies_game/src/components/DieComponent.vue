@@ -20,7 +20,7 @@ const updateDiceStatus = () => {
 
 const className = computed (() => ({
     "die-component-held": props.isHeld,
-    "die-component-not-held": !props.isHeld,
+    "die-component": true,
 }))
 </script>
 
