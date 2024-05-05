@@ -17,9 +17,7 @@ const days = ref(0)
 const hours = ref(0)
 const mins = ref(0)
 const secs = ref(0)
-const isAllZero = ref(false)
-
-
+const isTargetReach = ref(false);
 
 const getCurrentDate = () => {
   currentDate.value = Math.floor(Date.now() / 1000);
@@ -38,10 +36,10 @@ const updateReaminTime = () => {
     hours.value = 0;
     mins.value = 0;
     secs.value = 0;
+    isTargetReach.value = true;
     console.log ("Target is arrive!!");
   }
 }
-
 
 watch (currentDate, () => {
   updateReaminTime ();
@@ -67,53 +65,19 @@ onMounted (() => {
   console.log ("Begin counting...");
   runTimer();
 })
-
-
-const targetList = [days, hours, mins, secs];
-const checkAllZero = () => {
-  console.log (targetList.every((item) => {
-    console.log (item.value)
-  }))
-  return targetList.every ((item) => {
-    item.value === 0
-  })
-}
-
-watch (diffSecs, () => {
-  return isAllZero.value <= 0
-})
-
-const items = [
-  {value: days, name: "day", isEnd: false,
-    "class": {"visable": !isAllZero.value && days.value == 0,
-              "target_reach": isAllZero.value}},
-  {value: hours, name: "hour", isEnd: false,
-    "class": {"visable": !isAllZero.value && hours.value == 0,
-              "target_reach": isAllZero.value}},
-  {value: mins, name: "min", isEnd: false,
-    "class": {"visable": !isAllZero.value && mins.value == 0,
-              "target_reach": isAllZero.value}},
-  {value: secs, name: "sec", isEnd: true,
-    "class": {"visable": !isAllZero.value && secs.value == 0,
-              "target_reach": isAllZero.value}},
-]
-console.log (items)
-
-
-const targetProps = {
-  "target": props.target,
-}
-
 </script>
 
 <template>
   <div class="counter-container">
-    <TargetShow v-bind="targetProps"/>
-    <div class="counter-table">
-      <TimeComponent v-for="item in items"
-          v-bind="item"
-          key="item['name']"
-      />
+    <TargetShow :target="target" />
+    <div class="counter-table" :class="{targetReach: isTargetReach}">
+      <TimeComponent :value="days" name="day"/>
+      <SpliterShow />
+      <TimeComponent :value="hours" name="hour"/>
+      <SpliterShow />
+      <TimeComponent :value="mins" name="min"/>
+      <SpliterShow />
+      <TimeComponent :value="secs" name="sec"/>
     </div>
   </div>
 </template>
@@ -137,8 +101,12 @@ const targetProps = {
   justify-content: center;
 
   margin: 0 auto;
-  padding: 20px 30px;
-  max-width: 900px;
+  padding: 20px 20px;
+  max-width: 800px;
+}
 
+/* temporarily */
+.targetReach {
+  border: solid red;
 }
 </style>

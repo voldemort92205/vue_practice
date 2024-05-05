@@ -6,7 +6,7 @@ const targetStr = new Date(props.target)
 <template>
     <div class="target-component">
         <h1 class="target-title">Remaining Time</h1>
-        <h2 class="target-message">Target: {{ targetStr }}</h2>
+        <h2 class="target-message">Target:<hr>{{ targetStr }}</h2>
     </div>
 </template>
 
