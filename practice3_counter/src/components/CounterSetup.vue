@@ -56,10 +56,22 @@ watch ([dateInput, timeInput], () => {
 
 
 <style scoped>
+
+.counter-setup-containter {
+    width: 90%;
+    margin: 0 auto;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
 .setup-section {
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
+
+    width: 80%;
+    margin: 0 auto;
 }
 
 .input-section {
@@ -70,20 +82,21 @@ watch ([dateInput, timeInput], () => {
 }
 
 .control-section {
-    margin-top: 10px;
+    margin-top: 20px;
     padding: 5px 10px;
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
-
-    border: solid black;
 }
 
 .control-button {
     margin: 5px 5px;
-    width: 65px;
-    height: 25px;
+    width: 80px;
+    height: 30px;
     text-align: center;
+    font-size: 14px;
+    box-shadow: 0px 1px 1px 1px rgb(167, 150, 150);
+    border-radius: 10px;
 }
 .normal-button:hover {
     border: solid blue;

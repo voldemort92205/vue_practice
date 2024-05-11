@@ -34,7 +34,6 @@ const updateReaminTime = () => {
   } else {
     stopTimer();
     updateReaminTimeEach(0);
-
     isTargetReach.value = true;
     timerIsRunningStatus = false;
     timerCanBeSet = true;
@@ -92,7 +91,8 @@ const resetCounter = () => {
   stopCounter();
   timerIsRunningStatus = false;
   timerCanBeSet = true;
-  target.value = "";
+  target.value = initTarget;
+  isTargetReach.value = false;
   updateReaminTimeEach (0);
 };
 
@@ -123,7 +123,6 @@ const updateTarget = (val) => {
 
 <template>
   <div class="counter-container">
-    <div class="blank-block-header-footer"></div>
     <TargetShow :target="target" />
     <div class="counter-table" :class="{targetReach: isTargetReach}">
       <TimeComponent :value="days" name="day"/>
@@ -143,27 +142,17 @@ const updateTarget = (val) => {
       @pauseCounter="pauseCounter"
       @updateTarget="updateTarget"
       />
-    <div class="blank-block-header-footer"></div>
   </div>
 </template>
 
 <style scoped>
-.blank-block-header-footer {
-  height: 100px;
-}
-
 .blank-block {
   height: 20px;
 }
 .counter-container {  
-  margin: auto;
-  padding: 30px;
-
-  /* in center */
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  margin: 90px auto 80px;
+  width: 90%;
+  max-width: 900px;
 }
 
 .counter-table {

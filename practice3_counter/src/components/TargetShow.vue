@@ -4,8 +4,13 @@ const props = defineProps(["target"])
 const targetStr = ref('');
 
 watch (()=> props.target, () => {
-    targetStr.value = new Date(props.target)
-})
+    const output = new Date(props.target)
+    if (isNaN(output)) {
+        targetStr.value = "";
+    } else {
+        targetStr.value = output;
+    }
+});
 
 </script>
 <template>
@@ -16,15 +21,13 @@ watch (()=> props.target, () => {
 </template>
 
 <style scoped>
-
-.time-component {
-    border: 5px;
-    margin: 20px;
-    padding: 20px 40px;
-    
-    border: solid gray;
+.target-component {
+    border: 1px;
+    margin: 0 auto 40px;
+    width: 100%;
+    padding: 0px 10px;
 }
-.time-value {
+.target-message {
     font-size: 20px;
 }
 </style>

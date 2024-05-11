@@ -25,11 +25,12 @@ const props = defineProps({
     position: relative;
 }
 .time-title {
-    font-size: 16px;
+    font-size: 14px;
     position: absolute;
-    right: 0%;
+    right: 20px;
+    bottom: -10px;
 }
 .time-value {
-    font-size: 90px;
+    font-size: 65px;
 }
 </style>
