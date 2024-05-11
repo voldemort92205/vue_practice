@@ -68,6 +68,9 @@ const stopTimer = () => {
 
 const runCounter = (timeStr) => {
   if (!timerIsRunningStatus) {
+    if (target.value == initTarget) {
+      target.value = Date.now()
+    }
     console.log ("Begin counting...");
     getCurrentDate();
     runTimer ();
@@ -161,7 +164,6 @@ const updateTarget = (val) => {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-
 }
 
 .counter-table {
@@ -171,10 +173,12 @@ const updateTarget = (val) => {
   margin: 0 auto 40px;
   padding: 20px 20px 40px;
   max-width: 800px;
+
+  box-shadow: 0px 5px 30px 10px rgb(167, 150, 150);
+  border-radius: 10px;
 }
 
-/* temporarily */
 .targetReach {
-  border: solid red;
+  box-shadow: 0px 5px 20px 10px #e5b604;
 }
 </style>
