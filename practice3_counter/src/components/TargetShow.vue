@@ -11,7 +11,7 @@ watch (()=> props.target, () => {
 <template>
     <div class="target-component">
         <h1 class="target-title">Remaining Time</h1>
-        <h4 class="target-message">Target: {{ targetStr }}</h4>
+        <h2 class="target-message">Target: {{ targetStr }}</h2>
     </div>
 </template>
 

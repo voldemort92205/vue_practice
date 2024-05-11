@@ -120,14 +120,7 @@ const updateTarget = (val) => {
 
 <template>
   <div class="counter-container">
-    <CounterSetup
-      @runCounter="runCounter"
-      @stopCounter="stopCounter"
-      @resetCounter="resetCounter"
-      @resumeCounter="resumeCounter"
-      @pauseCounter="pauseCounter"
-      @updateTarget="updateTarget"
-      />
+    <div class="blank-block-header-footer"></div>
     <TargetShow :target="target" />
     <div class="counter-table" :class="{targetReach: isTargetReach}">
       <TimeComponent :value="days" name="day"/>
@@ -138,11 +131,27 @@ const updateTarget = (val) => {
       <SpliterShow />
       <TimeComponent :value="secs" name="sec"/>
     </div>
+    <div class="blank-block"></div>
+    <CounterSetup
+      @runCounter="runCounter"
+      @stopCounter="stopCounter"
+      @resetCounter="resetCounter"
+      @resumeCounter="resumeCounter"
+      @pauseCounter="pauseCounter"
+      @updateTarget="updateTarget"
+      />
+    <div class="blank-block-header-footer"></div>
   </div>
 </template>
 
 <style scoped>
+.blank-block-header-footer {
+  height: 100px;
+}
 
+.blank-block {
+  height: 20px;
+}
 .counter-container {  
   margin: auto;
   padding: 30px;
