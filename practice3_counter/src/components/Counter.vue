@@ -1,51 +1,55 @@
 <script setup>
-import { ref, watch, onMounted, computed } from 'vue'
-import TimeComponent from './TimeComponent.vue'
-import TargetShow from './TargetShow.vue'
+import { ref, watch } from 'vue';
+import TimeComponent from './TimeComponent.vue';
+import TargetShow from './TargetShow.vue';
 import SpliterShow from './SpliterShow.vue';
+import CounterSetup from './CounterSetup.vue';
 
-const props = defineProps({
-  target: {
-    type: Number,
-    default: new Date(),
-  }
-})
-
-const currentDate = ref(0)
-const diffSecs = ref(1)
-const days = ref(0)
-const hours = ref(0)
-const mins = ref(0)
-const secs = ref(0)
+const initTarget = "";
+const target = ref(initTarget);
+const currentDate = ref(0);
+const diffSecs = ref(1);
+const days = ref(0);
+const hours = ref(0);
+const mins = ref(0);
+const secs = ref(0);
 const isTargetReach = ref(false);
 
 const getCurrentDate = () => {
   currentDate.value = Math.floor(Date.now() / 1000);
-}
+};
+
+const updateReaminTimeEach = (val) => {
+  days.value = Math.floor(val / 86400);
+  hours.value = Math.floor(val % 86400 / 3600);
+  mins.value = Math.floor(val % 3600 / 60);
+  secs.value = Math.floor(val % 3600 % 60);
+};
 
 const updateReaminTime = () => {
-  diffSecs.value = Math.floor(props.target/1000) - currentDate.value
+  diffSecs.value = Math.floor(target.value/1000) - currentDate.value
   if (diffSecs.value > 0) {
-    days.value = Math.floor(diffSecs.value / 86400);
-    hours.value = Math.floor(diffSecs.value % 86400 / 3600);
-    mins.value = Math.floor(diffSecs.value % 3600 / 60);
-    secs.value = Math.floor(diffSecs.value % 3600 % 60); 
+    isTargetReach.value = false;
+    updateReaminTimeEach(diffSecs.value);
   } else {
     stopTimer();
-    days.value = 0;
-    hours.value = 0;
-    mins.value = 0;
-    secs.value = 0;
+    updateReaminTimeEach(0);
+
     isTargetReach.value = true;
+    timerIsRunningStatus = false;
+    timerCanBeSet = true;
     console.log ("Target is arrive!!");
   }
-}
+};
 
 watch (currentDate, () => {
   updateReaminTime ();
-})
+});
 
-let timer = undefined
+let timer = undefined;
+let timerIsRunningStatus = false;
+let timerCanBeSet = true;
+
 const runTimer = () => {
   if (timer !== undefined) {
     clearInterval(timer);
@@ -53,22 +57,77 @@ const runTimer = () => {
   timer = setInterval(() => {
     getCurrentDate();
   }, 1000);
-}
+};
+
 const stopTimer = () => {
   if (timer !== undefined) {
     clearInterval (timer);
     timer = undefined;
   }
-}
-onMounted (() => {
-  getCurrentDate();
-  console.log ("Begin counting...");
-  runTimer();
-})
+};
+
+const runCounter = (timeStr) => {
+  if (!timerIsRunningStatus) {
+    console.log ("Begin counting...");
+    getCurrentDate();
+    runTimer ();
+    timerIsRunningStatus = true;
+    timerCanBeSet = false;
+  }
+};
+
+const stopCounter = () => {
+  if (timerIsRunningStatus) {
+    console.log ('counter stops');
+    stopTimer();
+    timerIsRunningStatus = false;
+    timerCanBeSet = true;
+  }
+};
+
+const resetCounter = () => {
+  stopCounter();
+  timerIsRunningStatus = false;
+  timerCanBeSet = true;
+  target.value = "";
+  updateReaminTimeEach (0);
+};
+
+const pauseCounter = () => {
+  if (!timerCanBeSet && timerIsRunningStatus) {
+    stopTimer();
+    timerIsRunningStatus = false;
+  }
+};
+
+const resumeCounter = () => {
+  if (!timerCanBeSet &&
+      !timerIsRunningStatus &&
+      target.value != initTarget) {
+    timerIsRunningStatus = true;
+    runTimer ();
+  }
+};
+
+const updateTarget = (val) => {
+  if (timerCanBeSet) {
+    target.value = val;
+  } else {
+    console.log ("There is a counter process...")
+  }
+};
 </script>
 
 <template>
   <div class="counter-container">
+    <CounterSetup
+      @runCounter="runCounter"
+      @stopCounter="stopCounter"
+      @resetCounter="resetCounter"
+      @resumeCounter="resumeCounter"
+      @pauseCounter="pauseCounter"
+      @updateTarget="updateTarget"
+      />
     <TargetShow :target="target" />
     <div class="counter-table" :class="{targetReach: isTargetReach}">
       <TimeComponent :value="days" name="day"/>
@@ -100,8 +159,8 @@ onMounted (() => {
   display: flex;
   justify-content: center;
 
-  margin: 0 auto;
-  padding: 20px 20px;
+  margin: 0 auto 40px;
+  padding: 20px 20px 40px;
   max-width: 800px;
 }
 

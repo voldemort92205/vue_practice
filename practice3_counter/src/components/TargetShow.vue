@@ -1,12 +1,17 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 const props = defineProps(["target"])
-const targetStr = new Date(props.target)
+const targetStr = ref('');
+
+watch (()=> props.target, () => {
+    targetStr.value = new Date(props.target)
+})
+
 </script>
 <template>
     <div class="target-component">
         <h1 class="target-title">Remaining Time</h1>
-        <h2 class="target-message">Target:<hr>{{ targetStr }}</h2>
+        <h4 class="target-message">Target: {{ targetStr }}</h4>
     </div>
 </template>
 

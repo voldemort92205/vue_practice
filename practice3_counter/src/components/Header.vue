@@ -10,7 +10,7 @@
 <style scoped>
 
 #header {
-    position: absolute;
+    position: fixed;
     font-size: 16px;
     width: 100%;
     top: 0%;
@@ -18,6 +18,9 @@
     flex-direction: row;
     justify-content: center;
     height: 50px;
+    color: whitesmoke;
+    background-color: black;
+    z-index: 9;
 }
 
 #header-info {

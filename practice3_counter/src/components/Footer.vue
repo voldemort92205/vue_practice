@@ -56,16 +56,20 @@ const footerWebisteSize = ref("20px");
 <style scoped>
 
 #footer {
-    position: absolute;
-    bottom: 0%;
+    position: fixed;
+    bottom: 0;
 
     font-size: 16px;
     width: 100%;
-    
+    height: 50px;
+    background-color: black;
+    color: whitesmoke;
 
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
+
+    z-index: 9;
 }
 
 .footer-info {
@@ -79,6 +83,7 @@ const footerWebisteSize = ref("20px");
 }
 .footer-website {
     padding: 1px 5px;
+    filter: invert(100%);
 }
 
 </style>

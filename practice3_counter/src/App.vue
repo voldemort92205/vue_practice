@@ -3,12 +3,11 @@ import Counter from './components/Counter.vue'
 import Header from './components/Header.vue';
 import Footer from './components/Footer.vue';
 
-const target = Date.now() + 6000
 </script>
 
 <template> 
   <Header />
-  <Counter :target="target" />
+  <Counter />
   <Footer 
     author="Perry"
     github="https://github.com/voldemort92205"
