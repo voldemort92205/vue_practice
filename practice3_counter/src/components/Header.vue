@@ -2,31 +2,10 @@
 </script>
 
 <template>
-    <div id="header">
-        <div id="header-info">Counter</div>
-    </div>
+    <nav class="nav navbar-expand navbar-dark bg-dark fixed-top">
+        <div class="container-fluid text-white fs-1">Counter</div>
+    </nav>
 </template>
 
 <style scoped>
-
-#header {
-    position: fixed;
-    font-size: 16px;
-    width: 100%;
-    top: 0%;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    height: 50px;
-    color: whitesmoke;
-    background-color: black;
-    z-index: 9;
-}
-
-#header-info {
-    text-align: center;
-    margin: auto;
-    font-size: 30px;
-}
-
 </style>

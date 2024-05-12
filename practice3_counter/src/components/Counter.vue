@@ -124,7 +124,9 @@ const updateTarget = (val) => {
 <template>
   <div class="counter-container">
     <TargetShow :target="target" />
-    <div class="counter-table" :class="{targetReach: isTargetReach}">
+    <div class="counter-table shadow-lg rounded d-flex flex-row rounded rounded-4"
+        :class="{alert: isTargetReach, 'alert-danger': isTargetReach,}"
+        >
       <TimeComponent :value="days" name="day"/>
       <SpliterShow />
       <TimeComponent :value="hours" name="hour"/>
@@ -133,7 +135,6 @@ const updateTarget = (val) => {
       <SpliterShow />
       <TimeComponent :value="secs" name="sec"/>
     </div>
-    <div class="blank-block"></div>
     <CounterSetup
       @runCounter="runCounter"
       @stopCounter="stopCounter"
@@ -156,18 +157,8 @@ const updateTarget = (val) => {
 }
 
 .counter-table {
-  display: flex;
-  justify-content: center;
-
-  margin: 0 auto 40px;
+  margin: 20px auto 60px;
   padding: 20px 20px 40px;
   max-width: 800px;
-
-  box-shadow: 0px 5px 30px 10px rgb(167, 150, 150);
-  border-radius: 10px;
-}
-
-.targetReach {
-  box-shadow: 0px 5px 20px 10px #e5b604;
 }
 </style>

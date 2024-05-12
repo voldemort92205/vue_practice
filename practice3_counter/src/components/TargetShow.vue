@@ -14,20 +14,11 @@ watch (()=> props.target, () => {
 
 </script>
 <template>
-    <div class="target-component">
-        <h1 class="target-title">Remaining Time</h1>
-        <h2 class="target-message">Target: {{ targetStr }}</h2>
+    <div class="pt-0 pb-0 ps-5 pe-5 mb-5">
+        <h1 class="fs-1">Remaining Time</h1>
+        <h2 class="fs-4">Target: <hr> {{ targetStr }}</h2>
     </div>
 </template>
 
 <style scoped>
-.target-component {
-    border: 1px;
-    margin: 0 auto 40px;
-    width: 100%;
-    padding: 0px 10px;
-}
-.target-message {
-    font-size: 20px;
-}
 </style>

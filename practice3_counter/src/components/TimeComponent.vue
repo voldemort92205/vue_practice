@@ -10,25 +10,18 @@ const props = defineProps({
 })
 </script>
 <template>
-    <div class="time-component">
+    <div class="time-component pt-2 pb-2 ps-3 pe-3 m-1 position-relative">
         <div class="time-value">{{ value < 10 ? '0' + value : value }}</div>
         <p class="time-title">{{ name }}</p>
     </div>
 </template>
 
 <style scoped>
-
-.time-component {
-    border: 5px;
-    margin: 5px;
-    padding: 10px 20px;
-    position: relative;
-}
 .time-title {
-    font-size: 14px;
+    font-size: 16px;
     position: absolute;
     right: 20px;
-    bottom: -10px;
+    bottom: -12px;
 }
 .time-value {
     font-size: 65px;
