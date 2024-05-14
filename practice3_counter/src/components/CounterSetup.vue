@@ -1,11 +1,12 @@
 <script setup>
 import {ref, watch} from 'vue';
+import { buttonStat } from './constants';
+
+const props = defineProps (["btnStat"])
 
 const emits = defineEmits(['runCounter',
                             'stopCounter',
                             'resetCounter',
-                            'pauseCounter',
-                            'resumeCounter',
                             'updateTarget'
                         ]);
 
@@ -44,11 +45,22 @@ watch ([dateInput, timeInput], () => {
                 </div>
             </div>
             <div class="ctr-section d-flex justify-content-evenly">
-                <button class="btn btn-outline-dark" @click="$emit('runCounter')">Run</button>
-                <button class="btn btn-outline-dark" @click="$emit('stopCounter')">Stop</button>
-                <button class="btn btn-outline-dark" @click="$emit('pauseCounter')">Pause</button>
-                <button class="btn btn-outline-dark" @click="$emit('resumeCounter')">Resume</button>
-                <button class="btn btn-outline-danger" @click="$emit('resetCounter')">Reset</button>
+                <button class="btn"
+                        :class="{'btn-primary': btnStat == buttonStat.RUN,
+                                 'btn-outline-dark': btnStat != buttonStat.RUN}"
+                        @click="$emit('runCounter')">
+                    Run
+                </button>
+                <button class="btn"
+                        :class="{'btn-primary': btnStat == buttonStat.STOP,
+                                 'btn-outline-dark': btnStat != buttonStat.STOP}"
+                        @click="$emit('stopCounter')">
+                    Stop
+                </button>
+                <button class="btn btn-outline-danger"
+                        @click="$emit('resetCounter')">
+                    Reset
+                </button>
             </div>
         </div>
     </div>

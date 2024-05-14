@@ -4,6 +4,7 @@ import TimeComponent from './TimeComponent.vue';
 import TargetShow from './TargetShow.vue';
 import SpliterShow from './SpliterShow.vue';
 import CounterSetup from './CounterSetup.vue';
+import { buttonStat } from './constants';
 
 const initTarget = "";
 const target = ref(initTarget);
@@ -14,6 +15,7 @@ const hours = ref(0);
 const mins = ref(0);
 const secs = ref(0);
 const isTargetReach = ref(false);
+const currentButton = ref(buttonStat.NONE);
 
 const getCurrentDate = () => {
   currentDate.value = Math.floor(Date.now() / 1000);
@@ -37,6 +39,7 @@ const updateReaminTime = () => {
     isTargetReach.value = true;
     timerIsRunningStatus = false;
     timerCanBeSet = true;
+    currentButton.value = buttonStat.NONE;
     console.log ("Target is arrive!!");
   }
 };
@@ -75,6 +78,7 @@ const runCounter = (timeStr) => {
     runTimer ();
     timerIsRunningStatus = true;
     timerCanBeSet = false;
+    currentButton.value = buttonStat.RUN;
   }
 };
 
@@ -84,6 +88,7 @@ const stopCounter = () => {
     stopTimer();
     timerIsRunningStatus = false;
     timerCanBeSet = true;
+    currentButton.value = buttonStat.STOP;
   }
 };
 
@@ -93,23 +98,8 @@ const resetCounter = () => {
   timerCanBeSet = true;
   target.value = initTarget;
   isTargetReach.value = false;
+  currentButton.value = buttonStat.NONE;
   updateReaminTimeEach (0);
-};
-
-const pauseCounter = () => {
-  if (!timerCanBeSet && timerIsRunningStatus) {
-    stopTimer();
-    timerIsRunningStatus = false;
-  }
-};
-
-const resumeCounter = () => {
-  if (!timerCanBeSet &&
-      !timerIsRunningStatus &&
-      target.value != initTarget) {
-    timerIsRunningStatus = true;
-    runTimer ();
-  }
 };
 
 const updateTarget = (val) => {
@@ -139,9 +129,8 @@ const updateTarget = (val) => {
       @runCounter="runCounter"
       @stopCounter="stopCounter"
       @resetCounter="resetCounter"
-      @resumeCounter="resumeCounter"
-      @pauseCounter="pauseCounter"
       @updateTarget="updateTarget"
+      :btnStat="currentButton"
       />
   </div>
 </template>
