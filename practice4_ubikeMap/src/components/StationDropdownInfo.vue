@@ -1,5 +1,5 @@
 <script setup>
-import {ref} from 'vue'
+import {ref, watch} from 'vue'
 const props = defineProps (['bikeRawData']);
 
 let bikeData = ref({});
@@ -7,6 +7,9 @@ let areaDownList = {};
 const stationInfo = ref('TBD');
 const availableBorrow = ref(0);
 const availableReturn = ref(0);
+const searchResultList = ref([]);
+const searchKeyWord = ref("");
+const searchResultCount = ref(0);
 
 const encapsulateData = (item) => {
     let output = {
@@ -32,10 +35,28 @@ props.bikeRawData.forEach ((item) => {
 
 const showSelectInfo = (itemId) => {
     const item = bikeData[itemId];
-    stationInfo.value = item["sarea"] + " - " + item["sna"];
+    stationInfo.value = item["sarea"] + " - " + item["sna"] + '(' + item["ar"]+ ')';
     availableBorrow.value = item["available_rent_bikes"];
     availableReturn.value = item["available_return_bikes"];
 };
+
+const updateResult = (key) => {
+    searchResultList.value = [];
+    if (key !== "") {
+        props.bikeRawData.forEach((item) => {
+            if (item["ar"].includes(key) ||
+                item["sna"].includes(key))
+            {
+                searchResultList.value.push(encapsulateData(item))
+            }
+        })
+    }
+    searchResultCount.value = searchResultList.value.length;
+}
+
+watch (searchKeyWord, () => {
+    updateResult(searchKeyWord.value);
+})
 </script>
 
 <template>
@@ -48,7 +69,7 @@ const showSelectInfo = (itemId) => {
         </div>
         <hr>
         <div class="row pt-4 pb-4">
-            <div class="dropdown m-2 ms-auto me-auto col-2"
+            <div class="dropend m-2 ms-auto me-auto col-2"
                  v-for="area in Object.keys(areaDownList)"
                  :key="area"
                 >
@@ -64,7 +85,7 @@ const showSelectInfo = (itemId) => {
                 </button>
 
                 <div class="dropdown-menu overflow-scroll"
-                    style="max-height: 200px;"
+                    style="max-height: 250px;"
                     :labelledby="'dropdownMenu-'+area"
                     role="menu"
                     >
@@ -75,6 +96,57 @@ const showSelectInfo = (itemId) => {
                         >
                         {{ item["sna"] }}
                     </a>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <button class="btn btn-primary mt-2 mb-4 fs-5"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#searchList"
+                aria-expanded="false"
+                aria-controls="collapseExample"
+            >
+            Quick Search
+        </button>
+        <div class="collapse pt-4 pb-4"
+             style="height: 100px;"
+             id="searchList">
+            <div class="searchList-container row d-flex align-items-center">
+                <div class="serchInputSection col-5 justify-content-center">
+                    <label for="searchInput" class="fs-5">Keyword: </label>
+                    <input type="text"
+                           id="searchInput"
+                           placeholder="keyword for station or road"
+                           v-model.trim="searchKeyWord"
+                           class="fs-5"
+                    >
+                </div>
+                <div class="searchResultSection col-6 dropend d-flex justify-content-center">
+                    <button class="btn dropdown-toggle fs-5 p-2"
+                        :class="{'btn-secondary': searchResultCount,}"
+                        type="button"
+                        id="dropdownMenu-searchResult"
+                        data-toggle="dropdown"
+                        aria-haspopup="true"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                    >
+                    Result ({{ searchResultCount }})
+                    </button>
+                    <div class="dropdown-menu overflow-scroll"
+                         style="max-height: 200px;"
+                         labelledby="dropdownMenu-searchResult"
+                        role="menu"
+                        >
+                        <a v-for="item in searchResultList"
+                            class="dropdown-item fs-5"
+                            href="#"
+                            @click="() => showSelectInfo(item['sno'])"
+                            >
+                            {{ item["sna"] }}
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
