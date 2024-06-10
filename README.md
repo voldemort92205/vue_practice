@@ -8,3 +8,4 @@ Learn how to program with Vue framework.
 - Javascript
 - Vuejs
 - bootstrap
+- tailwindcss
