@@ -67,14 +67,14 @@ watch (searchKeyWord, () => {
 <template>
     <div class="shadow-2xl shadow-slate-600 rounded-lg mx-auto my-5 w-3/4 max-w-8xl">
         <div class="text-4xl py-4 font-black"> Station Information </div>
-        <div class="bikeinfo-content text-xl my-4">
+        <div class="bikeinfo-content md:text-xl my-4">
             <p class="font-bold">Name</p>: {{ stationInfo}} <br>
             <p class="font-bold">Available Rent/ Return</p>: 
                 {{ availableBorrow }}/ {{ availableReturn }} <br>
             <p class="font-bold">Last update</p>:
                 {{ lastUpdateTimeStamp }}
         </div>
-        <div class="grid grid-cols-5 mb-5">
+        <div class="grid grid-cols-3 md:grid-cols-5 mb-5 px-2">
             <div v-for="area in Object.keys(areaDownList)"
                     :key="area"
                     >
@@ -149,7 +149,8 @@ watch (searchKeyWord, () => {
                         >
                         <MenuItems class="mt-2 rounded-md bg-white w-40
                                          ring-2 ring-black h-40 overflow-auto
-                                         -translate-y-3/4 translate-x-3/4 absolute"
+                                         -translate-y-full -translate-x-3/4 absolute
+                                         md:-translate-y-3/4 md:translate-x-3/4"
                                     anchor="top start">
                             <div v-for="item in searchResultList"
                                 class="py-1"
