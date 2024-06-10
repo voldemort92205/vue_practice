@@ -1,5 +1,8 @@
 <script setup>
-import {ref, watch} from 'vue'
+import {ref, watch} from 'vue';
+import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue';
+import { ChevronDownIcon } from '@heroicons/vue/20/solid'
+
 const props = defineProps (['bikeRawData']);
 
 let bikeData = ref({});
@@ -7,6 +10,7 @@ let areaDownList = {};
 const stationInfo = ref('TBD');
 const availableBorrow = ref(0);
 const availableReturn = ref(0);
+const lastUpdateTimeStamp = ref('TBD');
 const searchResultList = ref([]);
 const searchKeyWord = ref("");
 const searchResultCount = ref(0);
@@ -38,6 +42,7 @@ const showSelectInfo = (itemId) => {
     stationInfo.value = item["sarea"] + " - " + item["sna"] + '(' + item["ar"]+ ')';
     availableBorrow.value = item["available_rent_bikes"];
     availableReturn.value = item["available_return_bikes"];
+    lastUpdateTimeStamp.value = item["updateTime"];
 };
 
 const updateResult = (key) => {
@@ -60,98 +65,114 @@ watch (searchKeyWord, () => {
 </script>
 
 <template>
-    <div class="container shadow-lg rounded m-5 ms-auto me-auto">
-        <div class="fs-1 pt-4"> Station Information </div>
-        <div class="bikeinfo-content fs-4 mt-3 mb-3">
-            <p class="fw-bold">Name</p>: {{ stationInfo}} <br>
-            <p class="fw-bold">Available Rent/ Return</p>: 
-                {{ availableBorrow }}/ {{ availableReturn }}
+    <div class="shadow-2xl shadow-slate-600 rounded-lg mx-auto my-5 w-3/4 max-w-8xl">
+        <div class="text-4xl py-4 font-black"> Station Information </div>
+        <div class="bikeinfo-content text-xl my-4">
+            <p class="font-bold">Name</p>: {{ stationInfo}} <br>
+            <p class="font-bold">Available Rent/ Return</p>: 
+                {{ availableBorrow }}/ {{ availableReturn }} <br>
+            <p class="font-bold">Last update</p>:
+                {{ lastUpdateTimeStamp }}
         </div>
-        <hr>
-        <div class="row pt-4 pb-4">
-            <div class="dropend m-2 ms-auto me-auto col-2"
-                 v-for="area in Object.keys(areaDownList)"
-                 :key="area"
-                >
-                <button class="btn btn-secondary dropdown-toggle fs-5 p-2"
-                        type="button"
-                        :id="'dropdownMenu-' + area"
-                        data-toggle="dropdown"
-                        aria-haspopup="true"
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false"
+        <div class="grid grid-cols-5 mb-5">
+            <div v-for="area in Object.keys(areaDownList)"
+                    :key="area"
                     >
-                    {{ area }}
-                </button>
-
-                <div class="dropdown-menu overflow-scroll"
-                    style="max-height: 250px;"
-                    :labelledby="'dropdownMenu-'+area"
-                    role="menu"
-                    >
-                    <a v-for="item in areaDownList[area].value"
-                        class="dropdown-item fs-5"
-                        href="#"
-                        @click="() => showSelectInfo(item['sno'])"
+                <Menu as="div" class=" my-2">
+                    <div>
+                        <MenuButton class="bg-gray text-gray-1000 py-2 px-4 my-2
+                                        border border-gray-500 rounded-md shadow
+                                        font-semibold inline-flex">
+                            {{ area }}
+                            <ChevronDownIcon class="-mr-1 h-5 w-5 text-gray-600" aria-hidden="true" />
+                        </MenuButton>
+                    </div>
+                    <transition enter-active-class="transition ease-out duration-100"
+                                enter-from-class="transform opacity-0 scale-95"
+                                enter-to-class="transform opacity-100 scale-100"
+                                leave-active-class="transition ease-in duration-75"
+                                leave-from-class="transform opacity-100 scale-100"
+                                leave-to-class="transform opacity-0 scale-95"
                         >
-                        {{ item["sna"] }}
-                    </a>
+                        <MenuItems class="mt-2 rounded-md bg-white w-40
+                                         ring-1 ring-black h-40 overflow-auto
+                                         absolute">
+                            <div v-for="item in areaDownList[area].value"
+                                    class="py-1">
+                                <MenuItem>
+                                    <a class="mx-1 py-1 block rounded
+                                            text-slate-600 hover:text-slate-100 hover:bg-gray-700"
+                                        @click="() => showSelectInfo(item['sno'])">
+                                        {{ item["sna"] }}
+                                    </a>
+                                </MenuItem>
+                            </div>
+                        </MenuItems>
+                    </transition>
+                    </Menu>
                 </div>
             </div>
-        </div>
         <hr>
-        <button class="btn btn-primary mt-2 mb-4 fs-5"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#searchList"
-                aria-expanded="false"
-                aria-controls="collapseExample"
-            >
-            Quick Search
-        </button>
-        <div class="collapse pt-4 pb-4"
+        <div class="py-4 px-3"
              style="height: 100px;"
              id="searchList">
-            <div class="searchList-container row d-flex align-items-center">
-                <div class="serchInputSection col-5 justify-content-center">
-                    <label for="searchInput" class="fs-5">Keyword: </label>
+            <div class="flex flex-row justify-evenly py-2">
+                <div class="">
+                    <label for="searchInput"
+                            class="font-bold text-lg"
+                    >
+                        Keyword:
+                    </label>
                     <input type="text"
                            id="searchInput"
                            placeholder="keyword for station or road"
                            v-model.trim="searchKeyWord"
-                           class="fs-5"
+                           class="shadow border rounded py-1 px-2 mx-2 my-1
+                                    text-gray-700 border-stone-400"
                     >
                 </div>
-                <div class="searchResultSection col-6 dropend d-flex justify-content-center">
-                    <button class="btn dropdown-toggle fs-5 p-2"
-                        :class="{'btn-secondary': searchResultCount,}"
-                        type="button"
-                        id="dropdownMenu-searchResult"
-                        data-toggle="dropdown"
-                        aria-haspopup="true"
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false"
-                    >
-                    Result ({{ searchResultCount }})
-                    </button>
-                    <div class="dropdown-menu overflow-scroll"
-                         style="max-height: 200px;"
-                         labelledby="dropdownMenu-searchResult"
-                        role="menu"
-                        >
-                        <a v-for="item in searchResultList"
-                            class="dropdown-item fs-5"
-                            href="#"
-                            @click="() => showSelectInfo(item['sno'])"
-                            >
-                            {{ item["sna"] }}
-                        </a>
+                <Menu as="div" class="">
+                    <div>
+                        <MenuButton class="bg-gray text-gray-1000 py-2 px-2 mx-2
+                                        border border-gray-500 rounded-md shadow
+                                        font-semibold inline-flex">
+                            Result ({{ searchResultCount }})
+                            <ChevronDownIcon class="-mr-1 h-5 w-5 text-gray-600" aria-hidden="true" />
+                        </MenuButton>
                     </div>
-                </div>
+                    <transition enter-active-class="transition ease-out duration-100"
+                                enter-from-class="transform opacity-0 scale-95"
+                                enter-to-class="transform opacity-100 scale-100"
+                                leave-active-class="transition ease-in duration-75"
+                                leave-from-class="transform opacity-100 scale-100"
+                                leave-to-class="transform opacity-0 scale-95"
+                        >
+                        <MenuItems class="mt-2 rounded-md bg-white w-40
+                                         ring-2 ring-black h-40 overflow-auto
+                                         -translate-y-3/4 translate-x-3/4 absolute"
+                                    anchor="top start">
+                            <div v-for="item in searchResultList"
+                                class="py-1"
+                            >
+                                <MenuItem>
+                                    <a class="mx-1 py-1 block rounded
+                                            text-slate-600 hover:text-slate-100 hover:bg-gray-700"
+                                        @click="() => showSelectInfo(item['sno'])"
+                                    >
+                                        {{ item["sna"] }}
+                                    </a>
+                                </MenuItem>
+                            </div>
+                        </MenuItems>
+                    </transition>
+                </Menu>
             </div>
         </div>
     </div>
 </template>
 
 <style scoped>
+.debug {
+    border: solid black;
+}
 </style>
