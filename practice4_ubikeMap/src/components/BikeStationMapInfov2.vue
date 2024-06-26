@@ -52,8 +52,9 @@ const getPointColor = (item) => {
 </script>
 
 <template>
-    <div class="shadow-2xl shadow-slate-600 rounded-lg
-                mx-auto my-10 w-3/4 max-w-8xl">
+    <div class="shadow-md shadow-slate-900 dark:shadow-slate-100
+                rounded-lg mx-auto my-5 w-3/4 max-w-8xl border-2
+                dark:border-zinc-600 dark:bg-zinc-800">
         <div class="text-4xl py-4 font-black"> Map</div>
         <div class="p-4 w-full" style="height:600px">
             <l-map
