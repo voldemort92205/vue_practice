@@ -1,12 +1,15 @@
 <script setup>
-import {ref, watch} from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue';
 import { ChevronDownIcon } from '@heroicons/vue/20/solid'
 
-const props = defineProps (['bikeRawData']);
+// assume it comes from remote server...
+import bikeRawDataSrc from '../assets/ubike.json';
 
-let bikeData = ref({});
-let areaDownList = {};
+const props = defineProps (['doRefreshClick']);
+
+const bikeData = reactive({});
+const areaDownList = reactive({});
 const stationInfo = ref('TBD');
 const availableBorrow = ref(0);
 const availableReturn = ref(0);
@@ -15,6 +18,35 @@ const searchResultList = ref([]);
 const searchKeyWord = ref("");
 const searchResultCount = ref(0);
 
+// pretend it download from server
+const getBikeRawData = () => {
+    return bikeRawDataSrc;
+};
+
+const cleanAreaDownList = () => {
+    Object.keys(areaDownList).forEach ((key) => {
+        delete areaDownList[key]
+    })
+};
+
+const parseData = () => {
+    const bikeRawData = getBikeRawData();
+    cleanAreaDownList ();
+    bikeRawData.forEach ((item) => {
+        const area = item.sarea;
+        if (area in areaDownList){
+            areaDownList[area].push(encapsulateData(item))
+        } else {
+            areaDownList[area] = [encapsulateData(item)];
+        }
+        // use sno as key for bikeData
+        bikeData[item.sno] = {
+            ...item,
+            sna: item.sna.replace('YouBike2.0_', ''),
+        };
+    })
+}
+
 const encapsulateData = (item) => {
     let output = {
         "sno": item.sno,
@@ -22,20 +54,6 @@ const encapsulateData = (item) => {
     };
     return output;
 };
-props.bikeRawData.forEach ((item) => {
-    const area = item.sarea;
-    if (area in areaDownList) {
-        areaDownList[area].value.push(encapsulateData(item))
-    } else {
-        areaDownList[area] = ref([encapsulateData(item)]);
-    }
-
-    // use sno as key for bikeData
-    bikeData[item.sno] = {
-        ...item,
-        sna: item.sna.replace('YouBike2.0_', ''),
-    };
-})
 
 const showSelectInfo = (itemId) => {
     const item = bikeData[itemId];
@@ -45,23 +63,33 @@ const showSelectInfo = (itemId) => {
     lastUpdateTimeStamp.value = item["updateTime"];
 };
 
-const updateResult = (key) => {
+const updateResult = (keyword) => {
     searchResultList.value = [];
-    if (key !== "") {
-        props.bikeRawData.forEach((item) => {
-            if (item["ar"].includes(key) ||
-                item["sna"].includes(key))
+    if (keyword !== "") {
+        Object.keys(bikeData).forEach((key) => {
+            const item = bikeData[key]
+            if (item["ar"].includes(keyword) ||
+                item["sna"].includes(keyword))
             {
-                searchResultList.value.push(encapsulateData(item))
+                searchResultList.value.push(item)
             }
         })
     }
     searchResultCount.value = searchResultList.value.length;
 }
 
+onMounted (() => {
+    parseData();
+});
+
+watch (() => props.doRefreshClick, () => {
+    console.log ("dropdown menu: refresh it");
+    parseData();
+});
+
 watch (searchKeyWord, () => {
     updateResult(searchKeyWord.value);
-})
+});
 </script>
 
 <template>
@@ -99,7 +127,7 @@ watch (searchKeyWord, () => {
                         <MenuItems class="mt-2 rounded-md bg-white w-40
                                          ring-1 ring-black h-40 overflow-auto
                                          absolute">
-                            <div v-for="item in areaDownList[area].value"
+                            <div v-for="item in areaDownList[area]"
                                     class="py-1">
                                 <MenuItem>
                                     <a class="mx-1 py-1 block rounded

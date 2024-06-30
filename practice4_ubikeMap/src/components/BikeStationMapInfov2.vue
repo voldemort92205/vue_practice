@@ -1,13 +1,21 @@
 <script setup>
-import {ref} from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import "leaflet/dist/leaflet.css";
 import { LMap, LTileLayer, LPopup, LCircle } from '@vue-leaflet/vue-leaflet';
 
-const props = defineProps (['bikeRawData']);
+const props = defineProps (['doRefreshClick']);
+
+// assume it comes from remote server...
+import bikeRawDataSrc from '../assets/ubike.json';
+
+// pretend it download from server
+const getBikeRawData = () => {
+    return bikeRawDataSrc;
+};
 
 // for data
-let bikeData = ref({});
-let areaInfoList = [];
+const bikeData = ref({});
+const areaInfoList = ref([]);
 
 const encapsulateData = (item) => {
     return {
@@ -18,16 +26,20 @@ const encapsulateData = (item) => {
     };
 };
 
-props.bikeRawData.forEach ((item) => {
-    areaInfoList.push(encapsulateData(item));
-
-    // use sno as key for bikeData
-    bikeData[item.sno] = {
-        ...item,
-        sna: item.sna.replace('YouBike2.0_', ''),
-        position: [item.latitude, item.longitude],
-    };
-})
+const parseData = () => {
+    const bikeRawData = getBikeRawData();
+    const areaInfoListLocal = []
+    bikeRawData.forEach ((item) => {
+        areaInfoListLocal.push(encapsulateData(item));
+        // use sno as key for bikeData
+        bikeData[item.sno] = {
+            ...item,
+            sna: item.sna.replace('YouBike2.0_', ''),
+            position: [item.latitude, item.longitude],
+        };
+    })
+    areaInfoList.value = areaInfoListLocal;
+}
 
 // for map
 const center = ref([25.04, 121.53]);
@@ -38,7 +50,7 @@ const fill = ref(true);
 
 const getUrl = () => {
   return 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-}
+};
 
 const getPointColor = (item) => {
     if (item["available_rent_bikes"] > 10) {
@@ -48,7 +60,16 @@ const getPointColor = (item) => {
     } else {
         return "red";
     }
-}
+};
+
+onMounted (() => {
+    parseData();
+});
+
+watch (() => props.doRefreshClick, () => {
+    console.log ("bike map: refresh it");
+    parseData();
+});
 </script>
 
 <template>
