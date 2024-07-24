@@ -89,6 +89,7 @@ watch (() => props.doRefreshClick, () => {
         <div class="text-4xl py-4 font-black"> Map</div>
         <div class="p-4 w-full" style="height:600px">
             <l-map
+                :use-global-leaflet="false"
                 :zoom="zoom"
                 :center="center">
                 <l-tile-layer
