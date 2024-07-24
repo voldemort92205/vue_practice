@@ -2,12 +2,11 @@
 import { onMounted, reactive, ref, watch } from 'vue';
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue';
 import { ChevronDownIcon } from '@heroicons/vue/20/solid'
-
-// assume it comes from remote server...
-import bikeRawDataSrc from '../assets/ubike.json';
+import axios from 'axios';
 
 const props = defineProps (['doRefreshClick']);
 
+// env data
 const bikeData = reactive({});
 const areaDownList = reactive({});
 const stationInfo = ref('TBD');
@@ -18,46 +17,64 @@ const searchResultList = ref([]);
 const searchKeyWord = ref("");
 const searchResultCount = ref(0);
 
-// pretend it download from server
-const getBikeRawData = () => {
-    return bikeRawDataSrc;
-};
+const bikeJsonUrl =
+    "https://tcgbusfs.blob.core.windows.net/dotapp/youbike/v2/youbike_immediate.json";
+var lastDownloadTime = 0;
+const downloadPeriod = 5000; // 5 second
 
-const cleanAreaDownList = () => {
-    Object.keys(areaDownList).forEach ((key) => {
-        delete areaDownList[key]
+const resetAreaDownList = (lastEpoch) => {
+    Object.keys(areaDownList).forEach ((area) => {
+        areaDownList[area] =
+            areaDownList[area].filter ((item) => {
+                return item.epoch == lastEpoch;
+            })
     })
 };
 
 const parseData = () => {
-    const bikeRawData = getBikeRawData();
-    cleanAreaDownList ();
-    bikeRawData.forEach ((item) => {
-        const area = item.sarea;
-        if (area in areaDownList){
-            areaDownList[area].push(encapsulateData(item))
-        } else {
-            areaDownList[area] = [encapsulateData(item)];
-        }
-        // use sno as key for bikeData
-        bikeData[item.sno] = {
-            ...item,
-            sna: item.sna.replace('YouBike2.0_', ''),
-        };
-    })
-}
+    if ((Date.now() - lastDownloadTime) < downloadPeriod) {
+        console.log ("Station Dropdown Menu: Update too quickly");
+        return;
+    }
+    axios.get(bikeJsonUrl)
+        .then((response) => {
+            lastDownloadTime = Date.now();
+            response.data.forEach((item) => {
+                const area = item.sarea;
+                if (area in areaDownList){
+                    areaDownList[area].push(
+                        encapsulateData(item, lastDownloadTime));
+                } else {
+                    areaDownList[area] =
+                        [encapsulateData(item, lastDownloadTime)];
+                }
+                // use sno as key for bikeData
+                bikeData[item.sno] = {
+                    ...item,
+                    sna: item.sna.replace('YouBike2.0_', ''),
+                };
+            });
+            resetAreaDownList(lastDownloadTime);
+            console.log ("Station Dropdown Menu: refresh it");
+        })
+        .catch((error) => {
+            console.log ('error: ', error);
+        })
+};
 
-const encapsulateData = (item) => {
+const encapsulateData = (item, epoch) => {
     let output = {
         "sno": item.sno,
         "sna": item.sna.replace('YouBike2.0_', ''),
+        "epoch": epoch,
     };
     return output;
 };
 
 const showSelectInfo = (itemId) => {
     const item = bikeData[itemId];
-    stationInfo.value = item["sarea"] + " - " + item["sna"] + '(' + item["ar"]+ ')';
+    stationInfo.value = item["sarea"] + " - " + item["sna"] +
+            '(' + item["ar"]+ ')';
     availableBorrow.value = item["available_rent_bikes"];
     availableReturn.value = item["available_return_bikes"];
     lastUpdateTimeStamp.value = item["updateTime"];
@@ -83,7 +100,6 @@ onMounted (() => {
 });
 
 watch (() => props.doRefreshClick, () => {
-    console.log ("dropdown menu: refresh it");
     parseData();
 });
 

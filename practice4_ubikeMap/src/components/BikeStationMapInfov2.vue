@@ -2,43 +2,54 @@
 import { ref, onMounted, watch } from 'vue';
 import "leaflet/dist/leaflet.css";
 import { LMap, LTileLayer, LPopup, LCircle } from '@vue-leaflet/vue-leaflet';
+import axios from 'axios';
 
 const props = defineProps (['doRefreshClick']);
 
-// assume it comes from remote server...
-import bikeRawDataSrc from '../assets/ubike.json';
-
-// pretend it download from server
-const getBikeRawData = () => {
-    return bikeRawDataSrc;
-};
-
-// for data
+// env data
 const bikeData = ref({});
 const areaInfoList = ref([]);
 
-const encapsulateData = (item) => {
+const bikeJsonUrl =
+    "https://tcgbusfs.blob.core.windows.net/dotapp/youbike/v2/youbike_immediate.json";
+var lastDownloadTime = 0;
+const downloadPeriod = 5000; // 5 second
+
+const encapsulateData = (item, epoch) => {
     return {
         "sno": item.sno,
         "sna": item.sna.replace('YouBike2.0_', ''),
         "available_rent_bikes": item["available_rent_bikes"],
         "position": [item["latitude"], item["longitude"]],
+        "epoch": epoch,
     };
 };
 
 const parseData = () => {
-    const bikeRawData = getBikeRawData();
-    const areaInfoListLocal = []
-    bikeRawData.forEach ((item) => {
-        areaInfoListLocal.push(encapsulateData(item));
-        // use sno as key for bikeData
-        bikeData[item.sno] = {
-            ...item,
-            sna: item.sna.replace('YouBike2.0_', ''),
-            position: [item.latitude, item.longitude],
-        };
-    })
-    areaInfoList.value = areaInfoListLocal;
+    if ((Date.now() - lastDownloadTime) < downloadPeriod) {
+        console.log ("Bike Station Map: Update too quickly");
+        return;
+    }
+    axios.get(bikeJsonUrl)
+        .then((response) => {
+            lastDownloadTime = Date.now();
+            const areaInfoListLocal = []
+            response.data.forEach((item) => {
+                areaInfoListLocal.push(
+                    encapsulateData(item, lastDownloadTime));
+                // use sno as key for bikeData
+                bikeData[item.sno] = {
+                    ...item,
+                    sna: item.sna.replace('YouBike2.0_', ''),
+                    position: [item.latitude, item.longitude],
+                };
+            });
+            areaInfoList.value = areaInfoListLocal;
+            console.log ("Bike Station Map: refresh it");
+        })
+        .catch((error) => {
+            console.log ('error: ', error);
+        })
 }
 
 // for map
@@ -67,7 +78,6 @@ onMounted (() => {
 });
 
 watch (() => props.doRefreshClick, () => {
-    console.log ("bike map: refresh it");
     parseData();
 });
 </script>
