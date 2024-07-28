@@ -16,6 +16,7 @@ const lastUpdateTimeStamp = ref('TBD');
 const searchResultList = ref([]);
 const searchKeyWord = ref("");
 const searchResultCount = ref(0);
+const selectedItemId = ref('');
 
 const bikeJsonUrl =
     "https://tcgbusfs.blob.core.windows.net/dotapp/youbike/v2/youbike_immediate.json";
@@ -55,6 +56,7 @@ const parseData = () => {
                 };
             });
             resetAreaDownList(lastDownloadTime);
+            updateSelectInfo();
             console.log ("Station Dropdown Menu: refresh it");
         })
         .catch((error) => {
@@ -71,13 +73,20 @@ const encapsulateData = (item, epoch) => {
     return output;
 };
 
-const showSelectInfo = (itemId) => {
-    const item = bikeData[itemId];
-    stationInfo.value = item["sarea"] + " - " + item["sna"] +
+const updateSelectInfo = () => {
+    if (selectedItemId.value !== '') {
+        const item = bikeData[selectedItemId.value];
+        stationInfo.value = item["sarea"] + " - " + item["sna"] +
             '(' + item["ar"]+ ')';
-    availableBorrow.value = item["available_rent_bikes"];
-    availableReturn.value = item["available_return_bikes"];
-    lastUpdateTimeStamp.value = item["updateTime"];
+        availableBorrow.value = item["available_rent_bikes"];
+        availableReturn.value = item["available_return_bikes"];
+        lastUpdateTimeStamp.value = item["updateTime"];
+    }
+};
+
+const showSelectInfo = (itemId) => {
+    selectedItemId.value = itemId;
+    updateSelectInfo();
 };
 
 const updateResult = (keyword) => {
