@@ -3,7 +3,8 @@
 // update to correct path
 import qualityData from "../airqualityData.json";
 import SimpleTable from "./SimpleTable.vue";
-import { reactive } from 'vue'
+import { reactive } from 'vue';
+import SimpleCircleMap from "./SimpleCircleMap.vue";
 
 const dataUrl = "https://data.gov.tw/dataset/40448";
 
@@ -45,6 +46,30 @@ const tableDataHeader = reactive([
   {"key": "so2_avg", "name": "二氧化硫移動平均值（ppb）"},
 ]);
 
+const mapDataInfo = reactive (
+  monitorData.map((item) => {
+    const obj = {};
+    obj["lat"] = item.latitude;
+    obj["lon"] = item.longitude;
+
+    if (item.pollutant) {
+      obj["fillColor"] = "red"
+      obj["color"] = "red"
+
+    }
+    else
+    {
+      obj["fillColor"] = "green";
+      obj["color"] = "green";
+    }
+    obj["radius"] = 200;
+    obj["weight"] = 6;
+
+    obj["message"] = item.sitename + "測站 (" + item.status + ")";
+
+    return obj;
+  })
+)
 
 const tableDataRecord = reactive(
   monitorData.map ((item) => {
@@ -68,7 +93,16 @@ const tableDataRecord = reactive(
     </div>
 
     <!-- card view -->
-    <div class="bg-white h-180 rounded-lg">
+    <div class="map-card bg-white h-160 rounded">
+      <SimpleCircleMap
+        :mapCenterLat="24.05"
+        :mapCenterLon="121.05"
+        :mapZoom = 7
+        :mapCircleData = mapDataInfo
+      />
+    </div>
+
+    <div class="table-card bg-white h-180 rounded-lg">
       <SimpleTable
         :columns="tableDataHeader"
         :data="tableDataRecord"
@@ -81,7 +115,6 @@ const tableDataRecord = reactive(
     </div>
   </div>
 </template>
-
 
 <style scoped>
 </style>
