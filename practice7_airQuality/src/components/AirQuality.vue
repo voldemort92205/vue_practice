@@ -52,21 +52,27 @@ const mapDataInfo = reactive (
     obj["lat"] = item.latitude;
     obj["lon"] = item.longitude;
 
-    if (item.pollutant) {
-      obj["fillColor"] = "red"
-      obj["color"] = "red"
-
+    var message = item.sitename + "測站 (";
+    switch (item.status) {
+      case "良好":
+        obj["fillColor"] = "green";
+        obj["color"] = "green";
+        message += item.status + ")";
+        break;
+      case "普通":
+        obj["fillColor"] = "orange";
+        obj["color"] = "orange";
+        message += item.status + ": " + item.pollutant + ")";
+        break;
+      default:
+        obj["fillColor"] = "red";
+        obj["color"] = "red";
+        message += item.status + ": " + item.pollutant + ")";
+        break;
     }
-    else
-    {
-      obj["fillColor"] = "green";
-      obj["color"] = "green";
-    }
-    obj["radius"] = 200;
-    obj["weight"] = 6;
-
-    obj["message"] = item.sitename + "測站 (" + item.status + ")";
-
+    obj["message"] = message;
+    obj["radius"] = 5;
+    obj["weight"] = 3;
     return obj;
   })
 )
@@ -93,7 +99,7 @@ const tableDataRecord = reactive(
     </div>
 
     <!-- card view -->
-    <div class="map-card bg-white h-160 rounded">
+    <div class="map-card bg-white h-160 rounded m-3">
       <SimpleCircleMap
         :mapCenterLat="24.05"
         :mapCenterLon="121.05"
@@ -102,7 +108,7 @@ const tableDataRecord = reactive(
       />
     </div>
 
-    <div class="table-card bg-white h-180 rounded-lg">
+    <div class="table-card bg-white h-180 rounded-lg m-3">
       <SimpleTable
         :columns="tableDataHeader"
         :data="tableDataRecord"

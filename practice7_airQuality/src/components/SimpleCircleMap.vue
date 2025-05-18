@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref } from 'vue';
-import { LMap, LTileLayer, LCircle, LPopup } from '@vue-leaflet/vue-leaflet';
+import { LMap, LTileLayer, LCircle, LTooltip, LCircleMarker } from '@vue-leaflet/vue-leaflet';
 import 'leaflet/dist/leaflet.css';
 
 const props = defineProps ({
@@ -25,7 +25,7 @@ const updateMapData = () => {
   // use input data...
   mapData.value = props.mapCircleData.map((item) => {
     const obj = {};
-    obj["latlon"] = ref([item.lat, item.lon]);
+    obj["latlon"] = [item.lat, item.lon];
     obj["color"] = item.color;
     obj["radius"] = item.radius;
 
@@ -63,16 +63,17 @@ const tileUrl = ref('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
       <l-map :zoom="zoom" :center="center" :use-global-leaflet="false">
         <l-tile-layer :url="tileUrl"></l-tile-layer>
         <div v-for="(item, index) in mapData" :key="index">
-          <l-circle
+          <l-circle-marker
             :lat-lng="item['latlon']"
             :radius="item.radius"
             :color="item.color"
             :fill-color="item.fillColor"
             :fill = "item.fill"
             :weight = "item.weight"
+            :fillOpacity="0.8"
           >
-          <l-popup class="text-base">{{ item.message }}</l-popup>
-          </l-circle>
+          <l-tooltip class="text-base rounded-2xl">{{ item.message }}</l-tooltip>
+          </l-circle-marker>
         </div>
       </l-map>
     </div>
