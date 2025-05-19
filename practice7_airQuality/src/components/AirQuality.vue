@@ -99,12 +99,14 @@ const tableDataRecord = reactive(
     </div>
 
     <!-- card view -->
-    <div class="map-card bg-white h-160 rounded m-3">
+    <div class="map-card bg-white h-160 rounded m-3 p-3">
       <SimpleCircleMap
         :mapCenterLat="24.05"
         :mapCenterLon="121.05"
         :mapZoom = 7
         :mapCircleData = mapDataInfo
+        mapId = "mapContainer"
+        class="rounded"
       />
     </div>
 

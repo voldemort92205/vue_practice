@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref } from 'vue';
-import { LMap, LTileLayer, LCircle, LTooltip, LCircleMarker } from '@vue-leaflet/vue-leaflet';
+import L from "leaflet";
 import 'leaflet/dist/leaflet.css';
 
 const props = defineProps ({
@@ -17,6 +17,10 @@ const props = defineProps ({
     default: 9,
   },
   mapCircleData: Array,
+  mapId: {
+    type: String,
+    required: true,
+  }
 })
 
 const mapData = ref([])
@@ -45,38 +49,44 @@ const updateMapData = () => {
   })
 }
 
-
-onMounted (() => {
-  updateMapData();
-})
-
-
 const zoom = ref(props.mapZoom);
 const center = ref([props.mapCenterLat, props.mapCenterLon]);
 
-// for map url
-const tileUrl = ref('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+const refreshMap = () => {
+  updateMapData();
+
+  // update Map
+  const map = L.map(props.mapId, {
+    center: center.value,
+    zoom: zoom.value,
+    scrollWheelZoom: false,
+  })
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+  }).addTo(map);
+
+  mapData.value.forEach((item) => {
+    L.circleMarker(item.latlon, {
+      radius: item.radius,
+      color: item.color,
+      fillColor: item.fillColor,
+      fill: item.fill,
+      weight: item.weight,
+      opacity: 0.9
+    })
+    .bindTooltip(item.message).openTooltip()
+    .addTo(map);
+  })
+}
+
+onMounted (() => {
+  refreshMap();
+})
 </script>
 
 <template>
-    <div class="w-full h-full p-4">
-      <l-map :zoom="zoom" :center="center" :use-global-leaflet="false">
-        <l-tile-layer :url="tileUrl"></l-tile-layer>
-        <div v-for="(item, index) in mapData" :key="index">
-          <l-circle-marker
-            :lat-lng="item['latlon']"
-            :radius="item.radius"
-            :color="item.color"
-            :fill-color="item.fillColor"
-            :fill = "item.fill"
-            :weight = "item.weight"
-            :fillOpacity="0.8"
-          >
-          <l-tooltip class="text-base rounded-2xl">{{ item.message }}</l-tooltip>
-          </l-circle-marker>
-        </div>
-      </l-map>
-    </div>
+    <div class="w-full h-full" :id="props.mapId"></div>
 </template>
 
 
