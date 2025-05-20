@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, defineProps, watch } from 'vue'
+import { ref, computed, defineProps, watch, onMounted } from 'vue'
 
 const defaultPageSize = 10;
 
@@ -20,7 +20,45 @@ const props = defineProps({
     },
 });
 
-const currentPage = ref(1)
+const currentPage = ref(1);
+const processedData = ref([]);
+const inputKeyword = ref("");
+
+watch (inputKeyword, (keyword) => {
+    if (keyword === "" || keyword === ".") {
+        processedData.value = [...props.data];
+    }
+    else {
+        processedData.value = props.data.filter ((item) => {
+            for (const key in item) {
+                if (String(item[key]).includes(keyword))
+                    return true;
+            }
+            return false;
+        })
+    }
+})
+
+const sortingData = () => {
+    if (sortKey.value === NA) {
+        processedData.value = [...props.data];
+    }
+    else {
+        processedData.value = [...props.data].sort((itemA, itemB) => {
+            const valueA = itemA[sortKey.value];
+            const valueB = itemB[sortKey.value];
+
+            if (typeof valueA === "number" && typeof valueB === "number") {
+                return sortDirection.value === ASC ? valueA - valueB : valueB - valueA;
+            } else if (typeof valueA === "string" && typeof valueB === "string") {
+                return sortDirection.value === ASC ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
+            } else {
+            // more data type here
+            return 0;
+            }
+        });
+    }
+}
 
 const ASC = "asc";
 const DASC = "dasc";
@@ -38,14 +76,6 @@ const totalPages = computed(() =>
     Math.ceil(props.data.length / props.pageSize)
 );
 
-const pagedDate = computed(() => {
-    if (!props.pageCollapse) return props.data;
-
-    const start = (currentPage.value - 1) * props.pageSize
-    return props.data.slice(start, start + props.pageSize)
-})
-
-
 const nextPage = () => {
     if (currentPage.value < totalPages.value) currentPage.value ++;
 }
@@ -53,30 +83,6 @@ const prevPage = () => {
     if (currentPage.value > 1) currentPage.value --;
 }
 
-/* TODO function list */
-const searchIt = () => {
-    console.log ("Click Search !!")
-}
-
-
-const SortedData = computed (() => {
-    if (sortKey.value === NA) {
-        return [...props.data];
-    }
-    return [...props.data].sort((itemA, itemB) => {
-        const valueA = itemA[sortKey.value];
-        const valueB = itemB[sortKey.value];
-
-        if (typeof valueA === "number" && typeof valueB === "number") {
-            return sortDirection.value === ASC ? valueA - valueB : valueB - valueA;
-        } else if (typeof valueA === "string" && typeof valueB === "string") {
-            return sortDirection.value === ASC ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
-        } else {
-          // more data type here
-          return 0;
-        }
-    });
-})
 const sortBy = (key) => {
     // no support sorting when page collapse
     if (props.pageCollapse) return ;
@@ -97,7 +103,17 @@ const sortBy = (key) => {
         sortKey.value = key;
         sortDirection.value = ASC;
     }
+
+    // clear the keyword while sorting
+    if (inputKeyword.value) {
+        inputKeyword.value = "";
+    }
+    sortingData ();
 }
+
+onMounted (() => {
+    processedData.value = [...props.data];
+})
 </script>
 
 <template>
@@ -117,13 +133,13 @@ const sortBy = (key) => {
                                 class="bg-white w-full pr-11 h-10 pl-3 py-2 bg-transparent placeholder:text-slate-400 
                                         text-slate-700 text-sm border border-slate-200 rounded transition duration-200 ease 
                                         focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md"
-                                placeholder="Search... (no effect ...)"
+                                placeholder="Search..."
+                                v-model.trim="inputKeyword"
                             />
                             <button
                                 class="absolute h-8 w-8 right-1 top-1 my-auto px-2 flex items-center bg-blue-500 rounded
                                         hover:border-black"
-                                type="submit"
-                                @click="searchIt"
+                                type="button"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor"
                                         class="w-8 h-8 text-slate-200">
@@ -160,7 +176,7 @@ const sortBy = (key) => {
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(row, rowIndex) in SortedData" :key="rowIndex" class="hover:bg-slate-50 bg-white">
+                <tr v-for="(row, rowIndex) in processedData" :key="rowIndex" class="hover:bg-slate-50 bg-white">
                     <td v-for="(col, colIndex) in columns" :key="col.key"
                             class="p-4 border-b border-slate-300 bg-inherit"
                             :class = "[(colIndex === 0) ? 'sticky left-0' : '']"
