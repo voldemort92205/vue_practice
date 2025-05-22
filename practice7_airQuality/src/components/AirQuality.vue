@@ -26,6 +26,7 @@ const tryToConvertToNumer = (input) => {
 const tableDataHeader = reactive([
   {"key": "sitename", "name": "測站名稱"}, 
   {"key": "county", "name": "縣市"},
+  {"key": "publishtime", "name": "資料發布時間"},
   {"key": "status", "name": "狀態"},
   {"key": "aqi", "name": "空氣品質指標"},
   {"key": "pollutant", "name": "空氣污染指標物"},
@@ -99,7 +100,7 @@ const tableDataRecord = reactive(
     </div>
 
     <!-- card view -->
-    <div class="map-card bg-white h-160 rounded m-3 p-3">
+    <div class="map-card bg-white h-160 rounded mx-auto my-6 p-6 shadow-lg shadow-slate-400">
       <SimpleCircleMap
         :mapCenterLat="24.05"
         :mapCenterLon="121.05"
@@ -110,17 +111,17 @@ const tableDataRecord = reactive(
       />
     </div>
 
-    <div class="table-card bg-white h-180 rounded-lg m-3">
+    <div class="table-card bg-white h-180 rounded-lg mx-auto my-6 p-6 shadow-lg shadow-slate-400">
       <SimpleTable
         :columns="tableDataHeader"
         :data="tableDataRecord"
         tableWidth = "200px"
-        class="p-3"
       />
-      <p class="pt-2 pb-2">
-        Source: <a :href="dataUrl"> opendata </a>
-      </p>
     </div>
+
+    <p class="pt-1 pb-1">
+        Source: <a :href="dataUrl"> opendata </a>
+    </p>
   </div>
 </template>
 
