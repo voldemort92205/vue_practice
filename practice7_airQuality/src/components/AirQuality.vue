@@ -102,7 +102,7 @@ const tableDataRecord = reactive(
 <template>
   <div class="w-9/10 mx-auto pb-8">
     <div class="text-3xl font-bold underline py-6">
-      Air Quality Data
+      Air Quality Index (AQI)
     </div>
 
     <!-- card view -->
@@ -126,8 +126,8 @@ const tableDataRecord = reactive(
       />
     </div>
 
-    <p class="pt-1 pb-1">
-        Source: <a :href="dataUrl"> opendata </a>
+    <p class="pt-1 pb-1 text-slate-200">
+        Source: <a :href="dataUrl" class="text-slate-200"> opendata </a>
     </p>
   </div>
 </template>
