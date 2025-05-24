@@ -78,6 +78,12 @@ const mapDataInfo = reactive (
   })
 )
 
+const legendGroup = [
+  {"color": "green", "name": "良好"},
+  {"color": "orange", "name": "普通"},
+  {"color": "red", "name": "對敏感族群不健康"},
+]
+
 const tableDataRecord = reactive(
   monitorData.map ((item) => {
     const obj = {};
@@ -106,8 +112,9 @@ const tableDataRecord = reactive(
         :mapCenterLon="121.05"
         :mapZoom = 7
         :mapCircleData = mapDataInfo
+        :mapLegends = legendGroup
         mapId = "mapContainer"
-        class="rounded"
+        class="rounded-lg"
       />
     </div>
 

@@ -20,8 +20,17 @@ const props = defineProps ({
   mapId: {
     type: String,
     required: true,
-  }
+  },
+  mapLegends: Array,
 })
+
+// pre-defined variables
+// TODO: support more colors
+const colorMap = {
+  "green": "bg-green-500",
+  "red": "bg-red-500",
+  "orange": "bg-orange-500",
+}
 
 const mapData = ref([])
 
@@ -73,11 +82,12 @@ const refreshMap = () => {
       fillColor: item.fillColor,
       fill: item.fill,
       weight: item.weight,
-      opacity: 0.9
+      opacity: 0.9,
+      fillOpacity: 0.9,
     })
     .bindTooltip(item.message).openTooltip()
     .addTo(map);
-  })
+  });
 }
 
 onMounted (() => {
@@ -86,7 +96,17 @@ onMounted (() => {
 </script>
 
 <template>
-    <div class="w-full h-full" :id="props.mapId"></div>
+  <div class="w-full h-full relative">
+    <!-- legend -->
+    <div class="absolute flex flex-col top-0 right-0 z-2 bg-slate-50/60" v-if="props.mapLegends">
+      <div class="flex flex-row mx-2" v-for="legend in props.mapLegends">
+        <div class="w-3 h-3 rounded-full my-auto" :class="colorMap[legend.color]"></div>
+        <div class="mx-1">{{ legend.name }}</div>
+      </div>
+    </div>
+    <!-- map -->
+    <div class="relative w-full h-full z-1" :id="props.mapId"></div>
+  </div>
 </template>
 
 
