@@ -52,7 +52,7 @@ h1 {
   /* Photo by <a href="https://unsplash.com/@jack_scorner?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Thomas Griesbeck</a>
     on <a href="https://unsplash.com/photos/silhouette-of-pine-trees-photo-BS-Uxe8wU5Y?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Unsplash</a>
   */
-  background: url("./src/background_image.jpg");
+  background: url("/src/background_image.jpg");
   background-size: cover;
 }
 
