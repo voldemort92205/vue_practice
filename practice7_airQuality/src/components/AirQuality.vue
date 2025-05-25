@@ -97,12 +97,28 @@ const tableDataRecord = reactive(
     }
     return obj;
 }));
+
+const toUpdateData = () => {
+  console.log ("update...");
+}
 </script>
 
 <template>
-  <div class="w-9/10 mx-auto pb-8">
+  <div class="w-9/10 mx-auto pb-8 relative">
     <div class="text-3xl font-bold underline py-6">
       Air Quality Index (AQI)
+    </div>
+
+    <div>
+      <button type="button"
+        class="absolute top-10 right-5 flex flex-row rounded p-1 bg-slate-600 text-white
+                hover:bg-slate-500 "
+        style="cursor: pointer;"
+        @click="toUpdateData"
+      >
+        <i class="fa-solid fa-arrows-rotate my-auto mx-1"></i>
+        <p class="mx-1 my-auto">Reload</p>
+      </button>
     </div>
 
     <!-- card view -->
