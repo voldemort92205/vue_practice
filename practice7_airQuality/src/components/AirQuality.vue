@@ -1,16 +1,14 @@
 <script setup>
-
 // update to correct path
-import qualityData from "../airqualityData.json";
 import SimpleTable from "./SimpleTable.vue";
-import { reactive } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import SimpleCircleMap from "./SimpleCircleMap.vue";
+import axios from "axios";
 
 const dataUrl = "https://data.gov.tw/dataset/40448";
+const aqiUrlJson = "https://data.moenv.gov.tw/api/v2/aqx_p_432?api_key=58d6040c-dca7-407f-a244-d0bfdfa8144a";
 
-const monitorData = reactive(
-  qualityData.records.map((item) => {return item})
-);
+const refreshTime = ref("Null");
 
 const tryToConvertToNumer = (input) => {
   // return empty data
@@ -47,8 +45,11 @@ const tableDataHeader = reactive([
   {"key": "so2_avg", "name": "二氧化硫移動平均值（ppb）"},
 ]);
 
-const mapDataInfo = reactive (
-  monitorData.map((item) => {
+const mapDataInfo = reactive([]);
+const updateMapDataInfo = (data) => {
+  mapDataInfo.splice(0, mapDataInfo.length);
+
+  data.forEach((item) => {
     const obj = {};
     obj["lat"] = item.latitude;
     obj["lon"] = item.longitude;
@@ -74,9 +75,9 @@ const mapDataInfo = reactive (
     obj["message"] = message;
     obj["radius"] = 5;
     obj["weight"] = 3;
-    return obj;
-  })
-)
+    mapDataInfo.push(obj);
+  });
+}
 
 const legendGroup = [
   {"color": "green", "name": "良好"},
@@ -84,8 +85,10 @@ const legendGroup = [
   {"color": "red", "name": "對敏感族群不健康"},
 ]
 
-const tableDataRecord = reactive(
-  monitorData.map ((item) => {
+const tableDataRecord = reactive([]);
+const updateTableDataRecord = (data) => {
+  tableDataRecord.splice(0, tableDataRecord.length);
+  data.forEach ((item) => {
     const obj = {};
     for (const header of tableDataHeader) {
       if (header.key in item) {
@@ -95,18 +98,39 @@ const tableDataRecord = reactive(
         obj[header.key] = "-"
       }
     }
-    return obj;
-}));
+    tableDataRecord.push(obj);
+  })
+}
+
+const doRefresh = () => {
+  queryData();
+}
+const queryData = () => {
+  axios
+    .get(aqiUrlJson)
+    .then((response) => {
+      updateTableDataRecord(response.data.records);
+      updateMapDataInfo(response.data.records);
+      refreshTime.value = new Date().toLocaleString();
+    });
+}
 
 const toUpdateData = () => {
-  console.log ("update...");
+  doRefresh();
 }
+
+onMounted (() => {
+  doRefresh();
+})
 </script>
 
 <template>
   <div class="w-9/10 mx-auto pb-8 relative">
     <div class="text-3xl font-bold underline py-6">
       Air Quality Index (AQI)
+    </div>
+    <div>
+      Last Refresh Time: {{ refreshTime }}
     </div>
 
     <div>

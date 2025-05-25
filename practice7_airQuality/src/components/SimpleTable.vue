@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, defineProps, watch, onMounted } from 'vue'
+import { ref, computed, defineProps, watch } from 'vue'
 
 const defaultPageSize = 10;
 
@@ -72,6 +72,11 @@ watch (() => props.tableWidth, (newValue) => {
     tableWidthSet.value = "min-w-[" + newValue + "]";
 })
 
+// render page when data update
+watch(() => props.data, () => {
+    processedData.value = [...props.data];
+}, {deep: true});
+
 const totalPages = computed(() => 
     Math.ceil(props.data.length / props.pageSize)
 );
@@ -110,10 +115,6 @@ const sortBy = (key) => {
     }
     sortingData ();
 }
-
-onMounted (() => {
-    processedData.value = [...props.data];
-})
 </script>
 
 <template>

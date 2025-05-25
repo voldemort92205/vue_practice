@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
 import L from "leaflet";
 import 'leaflet/dist/leaflet.css';
 
@@ -33,7 +33,6 @@ const colorMap = {
 }
 
 const mapData = ref([])
-
 const updateMapData = () => {
   // use input data...
   mapData.value = props.mapCircleData.map((item) => {
@@ -56,27 +55,23 @@ const updateMapData = () => {
 
     return obj;
   })
-}
+};
+
+watch (() => props.mapCircleData, () => {
+    refreshMap();
+  }, {deep: true}
+);
 
 const zoom = ref(props.mapZoom);
 const center = ref([props.mapCenterLat, props.mapCenterLon]);
+const mapDataIcons = reactive([]);
+const map = ref(null);
 
 const refreshMap = () => {
   updateMapData();
-
-  // update Map
-  const map = L.map(props.mapId, {
-    center: center.value,
-    zoom: zoom.value,
-    scrollWheelZoom: false,
-  })
-  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-  }).addTo(map);
-
+  mapDataIcons.splice(0, mapDataIcons.length);
   mapData.value.forEach((item) => {
-    L.circleMarker(item.latlon, {
+    const localIcon = L.circleMarker(item.latlon, {
       radius: item.radius,
       color: item.color,
       fillColor: item.fillColor,
@@ -86,12 +81,27 @@ const refreshMap = () => {
       fillOpacity: 0.9,
     })
     .bindTooltip(item.message).openTooltip()
-    .addTo(map);
+    .addTo(map.value);
+
+    mapDataIcons.push(localIcon);
   });
 }
 
+const initMap = () => {
+  // update Map
+  map.value = L.map(props.mapId, {
+    center: center.value,
+    zoom: zoom.value,
+    scrollWheelZoom: false,
+  })
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+  }).addTo(map.value);
+}
+
 onMounted (() => {
-  refreshMap();
+  initMap();
 })
 </script>
 
