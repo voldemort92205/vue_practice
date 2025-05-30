@@ -9,6 +9,7 @@ const dataUrl = "https://data.gov.tw/dataset/40448";
 const aqiUrlJson = "https://data.moenv.gov.tw/api/v2/aqx_p_432?api_key=58d6040c-dca7-407f-a244-d0bfdfa8144a";
 
 const refreshTime = ref("Null");
+const isDownloading = ref(false);
 
 const tryToConvertToNumer = (input) => {
   // return empty data
@@ -106,12 +107,23 @@ const doRefresh = () => {
   queryData();
 }
 const queryData = () => {
+  if (isDownloading.value) {
+    console.log ("There is a download process, skip this time...");
+    return ;
+  }
+  isDownloading.value = true;
   axios
     .get(aqiUrlJson)
     .then((response) => {
       updateTableDataRecord(response.data.records);
       updateMapDataInfo(response.data.records);
       refreshTime.value = new Date().toLocaleString();
+      console.log ("Download Complete: ", refreshTime.value);
+      isDownloading.value = false;
+    })
+    .catch(error => {
+      console.log ("error: ", error.message);
+      isDownloading.value = false;
     });
 }
 
@@ -126,7 +138,7 @@ onMounted (() => {
 
 <template>
   <div class="w-9/10 mx-auto pb-8 relative">
-    <div class="text-3xl font-bold underline py-6">
+    <div class="text-3xl font-bold underline py-6 text-slate-200">
       Air Quality Index (AQI)
     </div>
     <div>
@@ -135,9 +147,9 @@ onMounted (() => {
 
     <div>
       <button type="button"
-        class="absolute top-10 right-5 flex flex-row rounded p-1 bg-slate-600 text-white
-                hover:bg-slate-500 "
+        class="mt-4 mb-2 mx-auto md:absolute md:top-10 md:right-5 flex flex-row rounded p-1 text-white sm:top-30"
         style="cursor: pointer;"
+        :class="[isDownloading ? 'bg-slate-300' : 'bg-slate-600']"
         @click="toUpdateData"
       >
         <i class="fa-solid fa-arrows-rotate my-auto mx-1"></i>

@@ -111,7 +111,7 @@ onMounted (() => {
     <div class="absolute flex flex-col top-0 right-0 z-2 bg-slate-50/60" v-if="props.mapLegends">
       <div class="flex flex-row mx-2" v-for="legend in props.mapLegends">
         <div class="w-3 h-3 rounded-full my-auto" :class="colorMap[legend.color]"></div>
-        <div class="mx-1">{{ legend.name }}</div>
+        <div class="mx-1 text-slate-700">{{ legend.name }}</div>
       </div>
     </div>
     <!-- map -->

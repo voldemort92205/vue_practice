@@ -122,7 +122,7 @@ const sortBy = (key) => {
         <!-- Search Line -->
         <div class="w-full flex justify-between items-center mb-3 mt-1 pl-3 h-1/15">
             <div>
-                <p class="block font-sans text-lg antialiased font-normal leading-normal text-blue-gray-900">
+                <p class="block font-sans text-lg antialiased font-normal leading-normal text-slate-700">
                     共有 {{ props.data.length }} 筆資料
                 </p>
             </div>
