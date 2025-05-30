@@ -138,7 +138,7 @@ onMounted (() => {
 
 <template>
   <div class="w-9/10 mx-auto pb-8 relative">
-    <div class="text-3xl font-bold underline py-6 text-slate-200">
+    <div class="text-3xl font-bold underline py-6 text-slate-600 dark:text-slate-200">
       Air Quality Index (AQI)
     </div>
     <div>
