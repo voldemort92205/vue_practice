@@ -11,7 +11,7 @@ const props = defineProps ({
 
 const buttonClasses = ref(`shadow inline-flex justify-center 
 gap-x-1.5 px-3 py-3 bg-gray font-semibold shadow-black my-3 
-rounded text-slate-600`);
+rounded text-slate-600 hover:bg-slate-200`);
 
 /*** display - begin ***/
 const displayList = reactive({});
