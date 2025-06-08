@@ -7,5 +7,9 @@ Learn how to program with Vue framework.
 - html, css
 - Javascript
 - Vuejs
-- bootstrap
 - tailwindcss
+- vue router
+- pinia
+- leaflet
+- axios
+- ~~bootstrap~~ (currently use tailwindcss)
