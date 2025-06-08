@@ -2,7 +2,9 @@
 import { ref, reactive, onMounted } from 'vue';
 import SimpleCircleMap from "./SimpleCircleMap.vue";
 import SimpleDropdownMenu from './SimpleDropdownMenu.vue';
-import axios from 'axios';
+import { useYoubikeStore } from '../stores/useYouBikeStore';
+
+const youbikeStore = useYoubikeStore();
 
 const bikeRawData = reactive([]);
 
@@ -10,13 +12,6 @@ const stationInfo = ref('TBD');
 const availableBorrow = ref(0);
 const availableReturn = ref(0);
 const lastUpdateTimeStamp = ref('TBD');
-
-const bikeJsonUrl =
-    "https://tcgbusfs.blob.core.windows.net/dotapp/youbike/v2/youbike_immediate.json";
-var lastDownloadTime = 0;
-const downloadPeriod = 5000; // 5 second
-const refreshTime = ref("Null");
-const isDownloading = ref(false);
 
 
 /*** For map card - begin ***/
@@ -141,24 +136,13 @@ const updateRawData = (data) => {
     handleItemInformation();
 }
 
-const updateBikeData = () => {
-    if ((Date.now() - lastDownloadTime) < downloadPeriod) {
-        console.log ("Bike Station Map: Update too quickly");
-        return;
-    }
-    axios.get(bikeJsonUrl)
-        .then((response) => {
-            refreshTime.value = new Date().toLocaleString();
-            updateRawData(response.data);
-            console.log ("Bike Station Map: refresh it");
-        })
-        .catch((error) => {
-            console.log ('error: ', error);
-        })
+async function updateBikeData (forceUpdate = false) {
+    await youbikeStore.fetchData(forceUpdate);
+    updateRawData(youbikeStore.dataSet)
 }
 
-const doRefresh = () => {
-    updateBikeData();
+const doRefresh = (forceUpdate = false) => {
+    updateBikeData(forceUpdate);
 }
 
 onMounted (() => {
@@ -166,7 +150,7 @@ onMounted (() => {
 });
 
 const toUpdateData = () => {
-  doRefresh();
+  doRefresh(true);
 }
 </script>
 
@@ -176,13 +160,13 @@ const toUpdateData = () => {
             YouBike Map - Taipei City
         </div>
         <div>
-            Last Refresh Time: {{ refreshTime }}
+            Last Refresh Time: {{ youbikeStore.refreshTime }}
             </div>
         <div>
             <button type="button"
                 class="mt-4 mb-2 mx-auto md:absolute md:top-10 md:right-5 flex flex-row rounded p-1 text-white sm:top-30"
                 style="cursor: pointer;"
-                :class="[isDownloading ? 'bg-slate-300' : 'bg-slate-600']"
+                :class="[youbikeStore.isDownloading ? 'bg-slate-300' : 'bg-slate-600']"
                 @click="toUpdateData"
             >
                 <i class="fa-solid fa-arrows-rotate my-auto mx-1"></i>
@@ -216,7 +200,7 @@ const toUpdateData = () => {
             </div>
         </div>
         <div class="my-2 mx-auto">
-            source <a href="https://data.taipei/dataset/detail?id=c6bc8aed-557d-41d5-bfb1-8da24f78f2fb"> here</a>
+            source <a :href="youbikeStore.dataUrlSrc"> here</a>
         </div>
     </div>
 </template>

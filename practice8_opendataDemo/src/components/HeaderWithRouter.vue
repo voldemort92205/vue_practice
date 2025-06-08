@@ -20,7 +20,7 @@ const linkButtonClass = ref(`px-2 hover:bg-slate-200
                     absolute top-0 opacity-90 z-10 grid grid-cols-2">
         <div class="text-3xl my-auto px-5">
             <!-- hardcoe the homepage link here -->
-            <RouterLink to="/" :key="home-button" 
+            <RouterLink to="/" key="home-button" 
             >
                 {{ props.headerMessage }}
             </RouterLink>

@@ -3,13 +3,10 @@
 import SimpleTable from "./SimpleTable.vue";
 import { onMounted, reactive, ref } from 'vue';
 import SimpleCircleMap from "./SimpleCircleMap.vue";
-import axios from "axios";
+import { useAQIStore } from "../stores/useAQIStore";
 
-const dataUrl = "https://data.gov.tw/dataset/40448";
-const aqiUrlJson = "https://data.moenv.gov.tw/api/v2/aqx_p_432?api_key=58d6040c-dca7-407f-a244-d0bfdfa8144a";
 
-const refreshTime = ref("Null");
-const isDownloading = ref(false);
+const aqiStore = useAQIStore();
 
 const tryToConvertToNumer = (input) => {
   // return empty data
@@ -103,37 +100,23 @@ const updateTableDataRecord = (data) => {
   })
 }
 
-const doRefresh = () => {
-  queryData();
+const doRefresh = (forceUpdate = false) => {
+  queryData(forceUpdate);
 }
-const queryData = () => {
-  if (isDownloading.value) {
-    console.log ("There is a download process, skip this time...");
-    return ;
-  }
-  isDownloading.value = true;
-  axios
-    .get(aqiUrlJson)
-    .then((response) => {
-      updateTableDataRecord(response.data.records);
-      updateMapDataInfo(response.data.records);
-      refreshTime.value = new Date().toLocaleString();
-      console.log ("Download Complete: ", refreshTime.value);
-      isDownloading.value = false;
-    })
-    .catch(error => {
-      console.log ("error: ", error.message);
-      isDownloading.value = false;
-    });
+async function queryData (forceUpdate) {
+  await aqiStore.fetchData(forceUpdate);
+  updateTableDataRecord(aqiStore.dataSet);
+  updateMapDataInfo(aqiStore.dataSet);
 }
 
 const toUpdateData = () => {
-  doRefresh();
+  doRefresh(true);
 }
 
 onMounted (() => {
   doRefresh();
 })
+
 </script>
 
 <template>
@@ -142,14 +125,14 @@ onMounted (() => {
       Air Quality Index (AQI)
     </div>
     <div>
-      Last Refresh Time: {{ refreshTime }}
+      Last Refresh Time: {{ aqiStore.refreshTime }}
     </div>
 
     <div>
       <button type="button"
         class="mt-4 mb-2 mx-auto md:absolute md:top-10 md:right-5 flex flex-row rounded p-1 text-white sm:top-30"
         style="cursor: pointer;"
-        :class="[isDownloading ? 'bg-slate-300' : 'bg-slate-600']"
+        :class="[aqiStore.isDownloading ? 'bg-slate-300' : 'bg-slate-600']"
         @click="toUpdateData"
       >
         <i class="fa-solid fa-arrows-rotate my-auto mx-1"></i>
@@ -179,7 +162,7 @@ onMounted (() => {
     </div>
 
     <p class="pt-1 pb-1 text-slate-200">
-        Source: <a :href="dataUrl" class="text-slate-200"> opendata </a>
+        Source: <a :href="aqiStore.dataUrlSrc" class="text-slate-200"> opendata </a>
     </p>
   </div>
 </template>
