@@ -10,29 +10,48 @@ const props = defineProps ({
         default: [{name: "home", linkUrl: "/"}],
     }
 })
-const linkButtonClass = ref(`px-2 hover:bg-slate-200
-    py-3 mx-1 border-b-2 hover:border-b-4 hover:dark:bg-slate-600`);
+
+const showMenu = ref(false);
+const menuBarChange = () => {
+    showMenu.value = !showMenu.value;
+}
 </script>
 
 <template>
-    <header class="h-16 bg-white dark:bg-zinc-800 
-                    border-b border-gray-300  
-                    absolute top-0 opacity-90 z-10 grid grid-cols-2">
+    <div class="sticky top-0 z-10">
+    <header class="w-full bg-white dark:bg-zinc-800
+                    border-b border-gray-300
+                     opacity-90 grid grid-cols-2 z-10
+                    h-16">
         <div class="text-3xl my-auto px-5">
             <!-- hardcoe the homepage link here -->
-            <RouterLink to="/" key="home-button" 
+            <RouterLink to="/" key="home-button"
             >
                 {{ props.headerMessage }}
             </RouterLink>
         </div>
-        <div class="my-auto">
-            <RouterLink v-for="item in props.routerInfo" :to="item.linkUrl" :key="item.name" 
-                :class="linkButtonClass"
-            >
-                {{ item.name }}
-            </RouterLink>
+        <div class="my-auto absolute right-0 pr-6">
+            <button type="button" style="cursor: pointer;"
+                    class="h-15 w-15 my-auto text-xl"
+                    @click="menuBarChange">
+                <i class="fa-solid fa-bars"></i>
+            </button>
         </div>
     </header>
+
+    <div v-if="showMenu"
+        class="my-auto bg-white absolute top-15 right-10 z-15 rounded">
+        <RouterLink v-for="item in props.routerInfo"
+                    :to="item.linkUrl" :key="item.name"
+                    class="flex flex-row px-2 py-2 hover:bg-slate-200
+                            rounded border-1 w-full hover:dark:bg-slate-600"
+                    @click="menuBarChange"
+        >
+            {{ item.name }}
+        </RouterLink>
+    </div>
+
+    </div>
 </template>
 
 <style scoped>
