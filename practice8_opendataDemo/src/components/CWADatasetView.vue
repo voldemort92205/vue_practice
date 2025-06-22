@@ -54,7 +54,7 @@ onMounted (() => {
 
 <template>
     <div class="w-9/10 mx-auto relative">
-        <SimpleTitleDisplay h1Title="CWA Report" />
+        <SimpleTitleDisplay h1Title="CWA Dataset" />
         <div>
             Last Refresh Time: {{ cwaStore.refreshTimeFigures }}
         </div>
