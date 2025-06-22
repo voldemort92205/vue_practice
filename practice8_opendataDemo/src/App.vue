@@ -16,17 +16,21 @@ const navLists = reactive([
   {
     name: "You Bike Map",
     linkUrl: "/youbikemap",
+  },
+  {
+    name: "CWA Dataset",
+    linkUrl: "/cwadataset",
   }
 ])
 </script>
 
 <template>
   <div class="app-bgImage"></div>
-  <Header class="sticky top-0 h-16"
+  <Header
         headerMessage="Opendata Display"
         :routerInfo="navLists"
   />
-  <div class="w-4/5 mx-auto rounded mt-3">
+  <div class="w-5/6 mx-auto rounded mt-3">
     <RouterView />
   </div>
   <Footer class="relative bottom-0 mx-auto w-5/6 bg-white/50" />

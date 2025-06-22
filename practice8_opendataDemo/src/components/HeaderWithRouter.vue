@@ -23,7 +23,7 @@ const menuBarChange = () => {
                     border-b border-gray-300
                      opacity-90 grid grid-cols-2 z-10
                     h-16">
-        <div class="text-3xl my-auto px-5">
+        <div class="text-2xl my-auto px-5 md:text-3xl">
             <!-- hardcoe the homepage link here -->
             <RouterLink to="/" key="home-button"
             >

@@ -3,6 +3,7 @@ import { ref, reactive, onMounted } from 'vue';
 import SimpleCircleMap from "./SimpleCircleMap.vue";
 import SimpleDropdownMenu from './SimpleDropdownMenu.vue';
 import { useYoubikeStore } from '../stores/useYouBikeStore';
+import SimpleTitleDisplay from './SimpleTitleDisplay.vue';
 
 const youbikeStore = useYoubikeStore();
 
@@ -156,9 +157,7 @@ const toUpdateData = () => {
 
 <template>
     <div class="w-9/10 mx-auto relative">
-        <div class="text-3xl font-bold underline py-6 text-slate-600 dark:text-slate-200">
-            YouBike Map - Taipei City
-        </div>
+        <SimpleTitleDisplay h1Title="YouBike Map - Taipei City" />
         <div>
             Last Refresh Time: {{ youbikeStore.refreshTime }}
             </div>

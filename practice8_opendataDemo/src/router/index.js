@@ -1,7 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../components/HomeView.vue';
 import AirQualityView from '../components/AirQualityView.vue';
-import BikeStationInfo from '../components/BikeStationInfo.vue'
+import BikeStationInfo from '../components/BikeStationInfo.vue';
+import CWADatasetView from '../components/CWADatasetView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -20,6 +21,11 @@ const router = createRouter({
         path: '/youbikemap',
         name: 'youbikemap',
         component: BikeStationInfo,
+    },
+    {
+      path: '/cwadataset',
+      name: 'cwadataset',
+      component: CWADatasetView,
     }
   ]
 })
