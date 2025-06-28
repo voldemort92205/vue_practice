@@ -3,6 +3,7 @@ import HomeView from '../components/HomeView.vue';
 import AirQualityView from '../components/AirQualityView.vue';
 import BikeStationInfo from '../components/BikeStationInfo.vue';
 import CWADatasetView from '../components/CWADatasetView.vue';
+import NotFoundView from '../components/NotFoundView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -26,6 +27,11 @@ const router = createRouter({
       path: '/cwadataset',
       name: 'cwadataset',
       component: CWADatasetView,
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'wrongPage',
+      component: NotFoundView,
     }
   ]
 })
