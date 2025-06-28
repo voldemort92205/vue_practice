@@ -21,7 +21,7 @@ const menuBarChange = () => {
     <div class="sticky top-0 z-10">
     <header class="w-full bg-white dark:bg-zinc-800
                     border-b border-gray-300
-                     opacity-90 grid grid-cols-2 z-10
+                    opacity-90 grid grid-cols-2 z-10
                     h-16">
         <div class="text-2xl my-auto px-5 md:text-3xl">
             <!-- hardcoe the homepage link here -->
@@ -38,17 +38,20 @@ const menuBarChange = () => {
             </button>
         </div>
     </header>
-
     <div v-if="showMenu"
-        class="my-auto bg-white absolute top-15 right-10 z-15 rounded">
+        class="sticky top-0 h-screen bg-white/60 dark:bg-zinc-800/60"
+        @click="menuBarChange">
+        <div class="w-2/4 mx-auto flex flex-col justify-center border bg-white dark:bg-zinc-800"
+            @click="menuBarChange">
         <RouterLink v-for="item in props.routerInfo"
                     :to="item.linkUrl" :key="item.name"
-                    class="flex flex-row px-2 py-2 hover:bg-slate-200
-                            rounded border-1 w-full hover:dark:bg-slate-600"
+                    class="flex flex-row px-2 py-2 text-xl hover:bg-slate-200
+                            rounded hover:dark:bg-slate-600"
                     @click="menuBarChange"
         >
             {{ item.name }}
         </RouterLink>
+        </div>
     </div>
 
     </div>
