@@ -89,6 +89,7 @@ onMounted (() => {
             </button>
         </div>
 
+        <!-- TODO: handle this with createWebHashHistory()
         <div class="mx-auto my-3 flex justify-center">
             <a v-for="key in Object.keys(figureLists)" :key="key"
                     type="button" :href="'#'+key" style="cursor: pointer;"
@@ -97,6 +98,7 @@ onMounted (() => {
                 {{ key }}
             </a>
         </div>
+        -->
 
         <div v-for="(items, key) in figureLists" :key="key" :id="key"
                 class="my-5">

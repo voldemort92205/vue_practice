@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHashHistory } from 'vue-router';
 import HomeView from '../components/HomeView.vue';
 import AirQualityView from '../components/AirQualityView.vue';
 import BikeStationInfo from '../components/BikeStationInfo.vue';
@@ -6,7 +6,7 @@ import CWADatasetView from '../components/CWADatasetView.vue';
 import NotFoundView from '../components/NotFoundView.vue';
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: [
     {
         path: '/',
