@@ -53,7 +53,7 @@ onMounted (() => {
 </script>
 
 <template>
-    <div class="w-9/10 mx-auto relative">
+    <div class="relative">
         <SimpleTitleDisplay h1Title="CWA Dataset" />
         <div>
             Last Refresh Time: {{ cwaStore.refreshTimeFigures }}
@@ -71,33 +71,34 @@ onMounted (() => {
             </button>
         </div>
 
-        <div class="mx-auto my-3 flex w-full">
+        <div class="mx-auto my-3 flex justify-center">
             <a v-for="key in Object.keys(figureLists)" :key="key"
                     type="button" :href="'#'+key" style="cursor: pointer;"
-                    class="rounded border py-1 px-2 shadow shadow-slate-500
-                            mx-3 hover:bg-slate-200 hover:dark:bg-slate-600">
+                    class="btn_class hover:text-slate-800 border
+                            mx-3 hover:bg-slate-200 hover:dark:bg-slate-700">
                 {{ key }}
             </a>
         </div>
 
         <div v-for="(items, key) in figureLists" :key="key" :id="key"
-                class="my-5 bg-white/50 dark:bg-black/50 rounded shadow-slate-600 shadow">
-            <div class="text-xl pb-1 pt-3 font-mono font-semibold">
+                class="my-5">
+            <div class="text-3xl font-semibold">
                 {{ key }}
             </div>
-            <div class="pt-3 pb-5 rounded overflow-auto grid grid-cols-1 md:grid-cols-2
-                        2xl:grid-cols-3 gap-y-4 ">
+            <div class="pt-3 pb-5 grid grid-cols-1 md:grid-cols-2
+                        xl:grid-cols-3 gap-y-4">
                 <SimpleFigureView v-for="item in items" :key="item.title"
                         :figSrc="item.figSrc"
                         :title="item.title"
-                        imgClass="h-95 rounded p-2"
-                        class="w-90 rounded shadow shadow-slate-400 mx-auto"
+                        imgClass="h-95 p-2"
+                        titleClass="text"
+                        class="w-90 mx-auto rounded"
                          />
             </div>
         </div>
-        <p class="pt-1 pb-1 text-slate-200">
-            Source: <a :href="cwaStore.dataUrlSrc" class="text-slate-200"> opendata </a>
-        </p>
+        <div class="pt-1 pb-1">
+            Source: <a :href="cwaStore.dataUrlSrc"> opendata </a>
+        </div>
     </div>
 </template>
 

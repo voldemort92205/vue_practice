@@ -27,11 +27,6 @@ body {
   min-height: 100vh;
 }
 
-
-.card {
-  padding: 2em;
-}
-
 p {
   display: inline;
 }
@@ -55,6 +50,28 @@ p {
   */
   background: url("/src/background_image.jpg");
   background-size: cover;
+}
+
+@layer base {
+  h1 {
+    @apply text-5xl mb-3;
+  }
+  div {
+    @apply font-mono text-slate-800 dark:text-slate-200;
+  }
+}
+
+@layer utilities {
+  .footer_icon {
+    @apply mx-2;
+  }
+  .container {
+    @apply my-5;
+  }
+  .btn_class {
+    @apply shadow inline-flex justify-center gap-x-1.5 px-5 py-3 font-semibold 
+            shadow-black my-1 rounded hover:bg-slate-200;
+  }
 }
 
 @media (prefers-color-scheme: light) {

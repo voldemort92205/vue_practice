@@ -1,10 +1,10 @@
 <script setup>
 // update to correct path
 import SimpleTable from "./SimpleTable.vue";
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive } from 'vue';
 import SimpleCircleMap from "./SimpleCircleMap.vue";
 import { useAQIStore } from "../stores/useAQIStore";
-
+import SimpleTitleDisplay from "./SimpleTitleDisplay.vue";
 
 const aqiStore = useAQIStore();
 
@@ -120,10 +120,8 @@ onMounted (() => {
 </script>
 
 <template>
-  <div class="w-9/10 mx-auto pb-8 relative">
-    <div class="text-3xl font-bold underline py-6 text-slate-600 dark:text-slate-200">
-      Air Quality Index (AQI)
-    </div>
+  <div class="mx-auto relative">
+    <SimpleTitleDisplay h1Title="空氣指標 (AQI)"/>
     <div>
       Last Refresh Time: {{ aqiStore.refreshTime }}
     </div>
@@ -141,24 +139,35 @@ onMounted (() => {
     </div>
 
     <!-- card view -->
-    <div class="map-card bg-white h-160 rounded mx-auto my-6 p-6 shadow-lg shadow-slate-400">
-      <SimpleCircleMap
-        :mapCenterLat="24.05"
-        :mapCenterLon="121.05"
-        :mapZoom = 7
-        :mapCircleData = mapDataInfo
-        :mapLegends = legendGroup
-        mapId = "mapContainer"
-        class="rounded-lg"
-      />
+    <div class="container ">
+      <div class="text-3xl mb-2 mt-4">
+        測站及空氣品質
+        <i class="fa-solid fa-map-location-dot fa-lg"></i>
+      </div>
+      <div class="h-160 rounded mx-auto p-1 w-full max-w-4xl">
+        <SimpleCircleMap
+          :mapCenterLat="24.05"
+          :mapCenterLon="121.05"
+          :mapZoom = 7
+          :mapCircleData = mapDataInfo
+          :mapLegends = legendGroup
+          mapId = "mapContainer"
+          class="border border-white"
+        />
+      </div>
     </div>
 
-    <div class="table-card bg-white h-180 rounded-lg mx-auto my-6 p-6 shadow-lg shadow-slate-400">
-      <SimpleTable
-        :columns="tableDataHeader"
-        :data="tableDataRecord"
-        tableWidth = "200px"
-      />
+    <div class="container">
+      <div class="text-3xl mb-2 mt-4">
+        測站資訊
+      </div>
+      <div class="bg-white h-180 rounded mx-auto my-6 p-1 max-w-5xl">
+        <SimpleTable
+          :columns="tableDataHeader"
+          :data="tableDataRecord"
+          tableWidth = "200px"
+        />
+      </div>
     </div>
 
     <p class="pt-1 pb-1 text-slate-200">

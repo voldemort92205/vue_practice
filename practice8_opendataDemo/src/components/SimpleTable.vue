@@ -7,7 +7,7 @@ const props = defineProps({
     columns: Array,
     data: Array,
     pageSize: {
-        type: Number, 
+        type: Number,
         default: defaultPageSize
     },
     pageCollapse: {
@@ -77,7 +77,7 @@ watch(() => props.data, () => {
     processedData.value = [...props.data];
 }, {deep: true});
 
-const totalPages = computed(() => 
+const totalPages = computed(() =>
     Math.ceil(props.data.length / props.pageSize)
 );
 
@@ -120,9 +120,9 @@ const sortBy = (key) => {
 <template>
     <div class="h-full">
         <!-- Search Line -->
-        <div class="w-full flex justify-between items-center mb-3 mt-1 pl-3 h-1/15">
+        <div class="flex justify-between items-center mb-3 mt-1 pl-4 pt-4 h-1/15">
             <div>
-                <p class="block font-sans text-lg antialiased font-normal leading-normal text-slate-700">
+                <p class="text-lg antialiased font-normal leading-normal text-slate-700">
                     共有 {{ props.data.length }} 筆資料
                 </p>
             </div>
@@ -131,14 +131,14 @@ const sortBy = (key) => {
                     <div class="w-full max-w-sm min-w-[200px] relative">
                         <div class="relative">
                             <input
-                                class="bg-white w-full pr-11 h-10 pl-3 py-2 bg-transparent placeholder:text-slate-400 
-                                        text-slate-700 text-sm border border-slate-200 rounded transition duration-200 ease 
-                                        focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md"
+                                class="bg-white w-full pr-11 h-10 pl-3 py-2 placeholder:text-slate-400
+                                        text-slate-700 text-sm border border-slate-400 rounded
+                                        focus:outline-none focus:border-slate-400 hover:border-slate-600 focus:shadow-md"
                                 placeholder="Search..."
                                 v-model.trim="inputKeyword"
                             />
                             <button
-                                class="absolute h-8 w-8 right-1 top-1 my-auto px-2 flex items-center bg-blue-500 rounded
+                                class="absolute h-8 w-8 right-1 top-1 my-auto px-2 flex items-center bg-slate-500 rounded
                                         hover:border-black"
                                 type="button"
                             >
@@ -149,40 +149,39 @@ const sortBy = (key) => {
                             </button>
                         </div>
                     </div>
-                </div> 
+                </div>
             </div>
         </div>
 
         <!-- table information with scroll -->
         <div class="relative flex flex-col w-full h-9/10 overflow-auto border
-                    text-gray-900 bg-white shadow-md rounded bg-clip-border">
-            <table class="text-left">
+                    text-gray-900 bg-white rounded bg-clip-border">
+            <table class="text-left w-fit">
             <thead>
                 <tr>
                 <th v-for="(column, index) in columns"
                     :key="column"
                     style="cursor: pointer;"
-                    class="p-4 border-b border-slate-200 bg-slate-500 sticky top-0 z-3"
+                    class="p-2 border-b border-slate-200 bg-slate-500 sticky top-0 z-3"
                     :class="[tableWidthSet, (index === 0 ? 'sticky left-0 z-5' : '')]"
                     @click="sortBy(column.key)"
 
                 >
-                    <p class="block text-l font-normal leading-none text-slate-50">
+                    <p class="text-l font-normal leading-none text-slate-50">
                         {{ column.name }}
                         <i v-if="sortKey === column.key" :class="['fas', sortDirection === ASC ? 'fa-sort-up' : 'fa-sort-down']"></i>
                         <i v-else class="fas fa-sort"></i>
                     </p>
-                    
                 </th>
                 </tr>
             </thead>
             <tbody>
                 <tr v-for="(row, rowIndex) in processedData" :key="rowIndex" class="hover:bg-slate-50 bg-white">
                     <td v-for="(col, colIndex) in columns" :key="col.key"
-                            class="p-4 border-b border-slate-300 bg-inherit"
+                            class="p-3 border-b border-slate-300 bg-inherit"
                             :class = "[(colIndex === 0) ? 'sticky left-0' : '']"
                     >
-                        <p class="block text-sm text-slate-800" >
+                        <p class="text-sm text-slate-800" >
                             {{ row[col.key] }}
                         </p>
                     </td>

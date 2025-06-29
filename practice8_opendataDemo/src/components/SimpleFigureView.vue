@@ -14,6 +14,10 @@ const props = defineProps({
         type: String,
         default: "h-30 w-30"
     },
+    titleClass: {
+        type: String,
+        default: "text"
+    },
 })
 
 const isShowFullScreenFigure = ref(false);
@@ -23,11 +27,12 @@ const changeFullScreenStatus = () => {
 </script>
 
 <template>
-    <div class="bg-white dark:bg-black/40 hover:bg-slate-200
+    <div class=" hover:bg-slate-200
                 dark:hover:bg-slate-600"
         style="cursor: pointer;">
-        <div class="text pt-2 font-mono font-medium"
+        <div class="pt-2 font-mono font-medium"
               type="button"
+              :class="props.titleClass"
               @click="changeFullScreenStatus">
             {{ props.title }}
         </div>
@@ -35,8 +40,7 @@ const changeFullScreenStatus = () => {
             <img :src="props.figSrc" 
                 class="mx-auto p-1 rounded-xl"
                 :class="props.imgClass"
-
-                />
+            />
         </div>
         <!-- make image cover the screen -->
         <div v-if="isShowFullScreenFigure"

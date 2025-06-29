@@ -156,11 +156,14 @@ const toUpdateData = () => {
 </script>
 
 <template>
-    <div class="w-9/10 mx-auto relative">
-        <SimpleTitleDisplay h1Title="YouBike Map - Taipei City" />
+    <div class="mx-auto relative">
+        <div class="mx-auto flex justify-center items-center">
+            <i class="fa-solid fa-bicycle fa-3x mx-2"></i>
+            <SimpleTitleDisplay h1Title="YouBike - Taipei City"/>
+        </div>
         <div>
             Last Refresh Time: {{ youbikeStore.refreshTime }}
-            </div>
+        </div>
         <div>
             <button type="button"
                 class="mt-4 mb-2 mx-auto md:absolute md:top-10 md:right-5 flex flex-row rounded p-1 text-white sm:top-30"
@@ -173,29 +176,42 @@ const toUpdateData = () => {
             </button>
             </div>
 
-        <div class="map-card bg-white h-160 rounded mx-auto my-6 p-6 shadow-lg shadow-slate-400">
-            <SimpleCircleMap
-                :mapCenterLat="centerLat"
-                :mapCenterLon="centerLon"
-                :mapZoom = mapZoom
-                mapId = "mapContainer"
-                :mapCircleData = bikeMapData
-                :mapLegends = legendGroup
-            />
-        </div>
-        <div class="bg-white rounded mx-auto my-6 p-6 shadow-lg shadow-slate-400 dark:bg-slate-50">
-            <div class="md:text-xl my-4 w-3/4 mx-auto text-slate-600">
-                <p class="font-bold">Name</p>: {{ stationInfo}} <br>
-                <p class="font-bold">Available Rent/ Return</p>:
-                    {{ availableBorrow }}/ {{ availableReturn }} <br>
-                <p class="font-bold">Last update</p>:
-                    {{ lastUpdateTimeStamp }}
+        <div class="container">
+            <div class="text-3xl mb-2 mt-4">
+                地圖 - 站點和可借數量
+                <i class="fa-solid fa-map-location-dot fa-lg"></i>
             </div>
-            <div class="w-3/4 mx-auto shadow shadow-black rounded dark:bg-slate-50">
-                <SimpleDropdownMenu 
-                    :dropdownData=bikeDropdownData
-                    :onButtonClick="showItemInformation"
+            <div class="h-160 rounded mx-auto p-1 w-full max-w-4xl">
+                <SimpleCircleMap
+                    :mapCenterLat="centerLat"
+                    :mapCenterLon="centerLon"
+                    :mapZoom = mapZoom
+                    mapId = "mapContainer"
+                    :mapCircleData = bikeMapData
+                    :mapLegends = legendGroup
+                    class="border border-white"
                 />
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="text-3xl mb-2 mt-4">
+                車站資訊
+            </div>
+            <div class="text-xl w-fit px-6 mx-auto text-left">
+                <p class="font-bold">車站</p>: {{ stationInfo}} <br>
+                <p class="font-bold">可借數量/可還數量</p>:
+                    {{ availableBorrow }}/ {{ availableReturn }} <br>
+                <p class="font-bold">資料更新時間</p>:
+                    {{ lastUpdateTimeStamp }}
+                </div>
+            <div class="w-full max-w-4xl bg-white rounded mx-auto my-6 dark:bg-slate-50">
+                <div class="w-full mx-auto rounded dark:bg-slate-50 border">
+                    <SimpleDropdownMenu
+                        :dropdownData=bikeDropdownData
+                        :onButtonClick="showItemInformation"
+                    />
+                </div>
             </div>
         </div>
         <div class="my-2 mx-auto">

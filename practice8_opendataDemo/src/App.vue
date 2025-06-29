@@ -14,7 +14,7 @@ const navLists = reactive([
     linkUrl: "/airquality"
   },
   {
-    name: "You Bike Map",
+    name: "YouBike - Taipei",
     linkUrl: "/youbikemap",
   },
   {
@@ -33,7 +33,7 @@ const navLists = reactive([
   <div class="w-5/6 mx-auto rounded mt-3">
     <RouterView />
   </div>
-  <Footer class="relative bottom-0 mx-auto w-5/6 bg-white/50" />
+  <Footer />
 </template>
 
 <style scoped>
