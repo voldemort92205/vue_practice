@@ -5,6 +5,7 @@ import { onMounted, reactive } from 'vue';
 import SimpleCircleMap from "./SimpleCircleMap.vue";
 import { useAQIStore } from "../stores/useAQIStore";
 import SimpleTitleDisplay from "./SimpleTitleDisplay.vue";
+import SimpleSourceView from "./SimpleSourceView.vue";
 
 const aqiStore = useAQIStore();
 
@@ -170,9 +171,7 @@ onMounted (() => {
       </div>
     </div>
 
-    <p class="pt-1 pb-1 text-slate-200">
-        Source: <a :href="aqiStore.dataUrlSrc" class="text-slate-200"> opendata </a>
-    </p>
+    <SimpleSourceView :dataSrc="aqiStore.dataUrlSrc" />
   </div>
 </template>
 

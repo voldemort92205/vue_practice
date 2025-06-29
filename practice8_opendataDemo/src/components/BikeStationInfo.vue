@@ -4,6 +4,7 @@ import SimpleCircleMap from "./SimpleCircleMap.vue";
 import SimpleDropdownMenu from './SimpleDropdownMenu.vue';
 import { useYoubikeStore } from '../stores/useYouBikeStore';
 import SimpleTitleDisplay from './SimpleTitleDisplay.vue';
+import SimpleSourceView from './SimpleSourceView.vue';
 
 const youbikeStore = useYoubikeStore();
 
@@ -214,9 +215,7 @@ const toUpdateData = () => {
                 </div>
             </div>
         </div>
-        <div class="my-2 mx-auto">
-            source <a :href="youbikeStore.dataUrlSrc"> here</a>
-        </div>
+        <SimpleSourceView :dataSrc="youbikeStore.dataUrlSrc" />
     </div>
 </template>
 

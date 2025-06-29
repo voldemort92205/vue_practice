@@ -3,6 +3,7 @@ import SimpleFigureView from './SimpleFigureView.vue';
 import SimpleTitleDisplay from './SimpleTitleDisplay.vue';
 import { onMounted, reactive } from 'vue';
 import { useCWAStore } from '../stores/useCWAStore.js';
+import SimpleSourceView from './SimpleSourceView.vue';
 
 const cwaStore = useCWAStore();
 
@@ -96,9 +97,7 @@ onMounted (() => {
                          />
             </div>
         </div>
-        <div class="pt-1 pb-1">
-            Source: <a :href="cwaStore.dataUrlSrc"> opendata </a>
-        </div>
+        <SimpleSourceView :dataSrc="cwaStore.dataUrlSrc" />
     </div>
 </template>
 
