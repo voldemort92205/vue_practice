@@ -5,8 +5,21 @@ import SimpleDropdownMenu from './SimpleDropdownMenu.vue';
 import { useYoubikeStore } from '../stores/useYouBikeStore';
 import SimpleTitleDisplay from './SimpleTitleDisplay.vue';
 import SimpleSourceView from './SimpleSourceView.vue';
+import SimpleLoadingEffect from './SimpleLoadingEffect.vue';
 
 const youbikeStore = useYoubikeStore();
+
+// change refresh time
+const isStoreUpdate = ref(false);
+const webRefreshTime = ref("TBD");
+const preDownload = () => {
+    isStoreUpdate.value = true;
+    webRefreshTime.value = "Refreshing...";
+}
+const postDownload = (timeStamp = "Null") => {
+    isStoreUpdate.value = false;
+    webRefreshTime.value = timeStamp;
+}
 
 const bikeRawData = reactive([]);
 
@@ -139,8 +152,10 @@ const updateRawData = (data) => {
 }
 
 async function updateBikeData (forceUpdate = false) {
+    preDownload();
     await youbikeStore.fetchData(forceUpdate);
     updateRawData(youbikeStore.dataSet)
+    postDownload(youbikeStore.refreshTime);
 }
 
 const doRefresh = (forceUpdate = false) => {
@@ -162,14 +177,15 @@ const toUpdateData = () => {
             <i class="fa-solid fa-bicycle fa-3x mx-2"></i>
             <SimpleTitleDisplay h1Title="YouBike - Taipei City"/>
         </div>
-        <div>
-            Last Refresh Time: {{ youbikeStore.refreshTime }}
+        <div class="text-xl">
+            Last Refresh Time: {{ webRefreshTime }}
         </div>
+        <SimpleLoadingEffect :isLoading="isStoreUpdate" />
         <div>
             <button type="button"
                 class="mt-4 mb-2 mx-auto md:absolute md:top-10 md:right-5 flex flex-row rounded p-1 text-white sm:top-30"
                 style="cursor: pointer;"
-                :class="[youbikeStore.isDownloading ? 'bg-slate-300' : 'bg-slate-600']"
+                :class="[isStoreUpdate ? 'bg-slate-300' : 'bg-slate-600']"
                 @click="toUpdateData"
             >
                 <i class="fa-solid fa-arrows-rotate my-auto mx-1"></i>

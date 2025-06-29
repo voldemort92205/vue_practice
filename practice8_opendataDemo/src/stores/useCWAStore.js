@@ -200,8 +200,12 @@ export const useCWAStore = defineStore("opendataCWA", () => {
             refreshTimeResource.value = new Date().toLocaleString();
             isJsonDownloading.value = false;
             changeDownloadingState(false);
-            
         })
+        .catch(error => {
+            console.log ("Update dataset fail: ", error);
+            isJsonDownloading.value = false;
+            changeDownloadingState(false);
+        });
     }
     async function fetchFigures (forceUpdate = false) {
         if (!forceUpdate && refreshTimeFigures.value !== "Null") {
@@ -214,7 +218,8 @@ export const useCWAStore = defineStore("opendataCWA", () => {
         }
         if (dataSet.length == 0)
         {
-            initDataSet();
+            // fetchResource fail before???
+            await fetchResource();
         }
         isFigureDownloading.value = true;
         changeDownloadingState(true);
@@ -241,5 +246,5 @@ export const useCWAStore = defineStore("opendataCWA", () => {
         await fetchFigures (forceUpdate);
     }
 
-    return {initFetchSet, refreshTimeFigures, dataSet, dataUrlSrc, isDownloading, fetchFigures}
+    return {initFetchSet, refreshTimeFigures, dataSet, dataUrlSrc, fetchFigures}
 })

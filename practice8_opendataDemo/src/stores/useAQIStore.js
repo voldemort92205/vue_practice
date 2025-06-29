@@ -35,5 +35,5 @@ export const useAQIStore = defineStore("opendataAQI", () => {
                 isDownloading.value = false;
             })
     }
-    return {fetchData, refreshTime, dataSet, dataUrlSrc, isDownloading}
+    return {fetchData, refreshTime, dataSet, dataUrlSrc}
 })
