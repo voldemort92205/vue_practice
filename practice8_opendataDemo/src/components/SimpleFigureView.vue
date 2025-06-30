@@ -44,11 +44,15 @@ const changeFullScreenStatus = () => {
         </div>
         <!-- make image cover the screen -->
         <div v-if="isShowFullScreenFigure"
-            class="fixed top-0 left-0 mx-auto w-full h-screen bg-white/70 z-15"
-            @click="changeFullScreenStatus">
+            class="fixed top-0 left-0 mx-auto w-full h-screen bg-white/70 z-10
+                    flex justify-center items-center"
+             @click.self="changeFullScreenStatus"
+        >
             <img :src="props.figSrc" 
-                    class="rounded shadow shadow-black mx-auto h-full"
+                    class="rounded shadow shadow-black mx-auto h-5/6"
                 />
+            <i class="fa-regular fa-circle-xmark fa-2x absolute top-5 left-<50>"
+                @click="changeFullScreenStatus"></i>
         </div>
     </div>
 
