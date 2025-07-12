@@ -4,6 +4,7 @@ import AirQualityView from '../components/AirQualityView.vue';
 import BikeStationInfo from '../components/BikeStationInfo.vue';
 import CWADatasetView from '../components/CWADatasetView.vue';
 import NotFoundView from '../components/NotFoundView.vue';
+import FinancialView from '../components/FinancialView.vue';
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -27,6 +28,11 @@ const router = createRouter({
       path: '/cwadataset',
       name: 'cwadataset',
       component: CWADatasetView,
+    },
+    {
+      path: '/financialview',
+      name: 'financialview',
+      component: FinancialView,
     },
     {
       path: '/:pathMatch(.*)*',

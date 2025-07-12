@@ -20,6 +20,10 @@ const navLists = reactive([
   {
     name: "CWA Dataset",
     linkUrl: "/cwadataset",
+  },
+  {
+    name: "Financial Dataset",
+    linkUrl: "/financialview",
   }
 ])
 </script>
