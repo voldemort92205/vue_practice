@@ -102,16 +102,42 @@ const initMap = () => {
 }
 
 onMounted (() => {
+  updateLegend();
   initMap();
 })
+
+const legendColors = reactive([]);
+const updateLegend = () => {
+  legendColors.splice(0, legendColors.length);
+  props.mapLegends.forEach((colorInfo) => {
+    const obj = {...colorInfo};
+    const key = colorInfo.color;
+    if (key in colorMap)
+    {
+      obj["colorPredefined"] = colorMap[key];
+      obj["color"] = "";
+    }
+    else
+    {
+      obj["colorPredefined"] = "";
+    }
+    legendColors.push(obj)
+  })
+}
+
+watch(() => props.mapLegends, () => {
+  updateLegend();
+}, {deep: true})
+
 </script>
 
 <template>
   <div class="w-full h-full relative">
     <!-- legend -->
     <div class="absolute flex flex-col top-0 right-0 z-2 bg-slate-50/60" v-if="props.mapLegends">
-      <div class="flex flex-row mx-2" v-for="legend in props.mapLegends">
-        <div class="w-3 h-3 rounded-full my-auto" :class="colorMap[legend.color]"></div>
+      <div class="flex flex-row mx-2" v-for="legend in legendColors">
+        <div class="w-3 h-3 rounded-full my-auto" :class="legend.colorPredefined"
+            :style="'background-color:' + legend.color"></div>
         <div class="mx-1 text-slate-700">{{ legend.name }}</div>
       </div>
     </div>
@@ -119,7 +145,6 @@ onMounted (() => {
     <div class="relative w-full h-full z-1" :id="props.mapId"></div>
   </div>
 </template>
-
 
 <style scoped>
 </style>
