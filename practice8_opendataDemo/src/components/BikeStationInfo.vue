@@ -56,9 +56,9 @@ const encapsulateData = (item) => {
     const pointColor = getPointColor(item);
     output["message"] = message;
     output["fillColor"] = pointColor;
-    output["color"] = pointColor;
+    output["color"] = "black";
     output["radius"] = 5;
-    output["weight"] = 3;
+    output["weight"] = 1;
     return output;
 }
 

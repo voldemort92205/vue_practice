@@ -73,6 +73,7 @@ const refreshMap = () => {
   mapData.value.forEach((item) => {
     const localIcon = L.circleMarker(item.latlon, {
       radius: item.radius,
+      stroke: true,
       color: item.color,
       fillColor: item.fillColor,
       fill: item.fill,
