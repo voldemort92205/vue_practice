@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, reactive, ref, watch } from 'vue';
+import { onMounted, reactive, ref, watch, onBeforeUnmount } from 'vue';
 import L from "leaflet";
 import 'leaflet/dist/leaflet.css';
 
@@ -23,6 +23,10 @@ const props = defineProps ({
   },
   mapLegends: Array,
 })
+
+
+const mapContainer = ref(null);
+let mapInstance = null;
 
 // pre-defined variables
 // TODO: support more colors
@@ -65,7 +69,6 @@ watch (() => props.mapCircleData, () => {
 const zoom = ref(props.mapZoom);
 const center = ref([props.mapCenterLat, props.mapCenterLon]);
 const mapDataIcons = reactive([]);
-const map = ref(null);
 
 const refreshMap = () => {
   updateMapData();
@@ -82,15 +85,20 @@ const refreshMap = () => {
       fillOpacity: 0.9,
     })
     .bindTooltip(item.message).openTooltip()
-    .addTo(map.value);
+    .addTo(mapInstance);
 
     mapDataIcons.push(localIcon);
   });
 }
 
 const initMap = () => {
+  if (!mapContainer.value)
+  {
+    console.log ("map container is not initialized...");
+    return;
+  }
   // update Map
-  map.value = L.map(props.mapId, {
+  mapInstance = L.map(mapContainer.value, {
     center: center.value,
     zoom: zoom.value,
     scrollWheelZoom: false,
@@ -98,12 +106,20 @@ const initMap = () => {
   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-  }).addTo(map.value);
+  }).addTo(mapInstance);
 }
 
 onMounted (() => {
   updateLegend();
   initMap();
+});
+
+onBeforeUnmount (() => {
+  if (mapInstance)
+  {
+    mapInstance.remove();
+    mapInstance = null;
+  }
 })
 
 const legendColors = reactive([]);
@@ -142,7 +158,7 @@ watch(() => props.mapLegends, () => {
       </div>
     </div>
     <!-- map -->
-    <div class="relative w-full h-full z-1" :id="props.mapId"></div>
+    <div class="relative w-full h-full z-1" :id="props.mapId" ref="mapContainer"></div>
   </div>
 </template>
 
