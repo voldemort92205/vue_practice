@@ -8,12 +8,17 @@ export const useCWAStore = defineStore("opendataCWA", () => {
 
     const isJsonDownloading = ref(false);
     const isFigureDownloading = ref(false);
+
     const isDownloading = ref (false);
     const changeDownloadingState = (value) => {
         if (typeof value !== "boolean") return;
         isDownloading.value = value;
     }
 
+    const isRainfallDownloading = ref(false);
+
+
+    const refreshTimeRainfall = ref("Null");
     const refreshTimeResource = ref("Null");
     const refreshTimeFigures = ref("Null");
 
@@ -131,8 +136,17 @@ export const useCWAStore = defineStore("opendataCWA", () => {
         },
 
     ])
+
+    const dataSetRainfall = reactive([
+        {
+            class: "自動雨量站-雨量觀測資料",
+            webSrc: "https://data.gov.tw/dataset/9177",
+            jsonUrl: "https://opendata.cwa.gov.tw/fileapi/v1/opendataapi/O-A0002-001?Authorization=rdec-key-123-45678-011121314&format=JSON",
+            dataset: reactive([]),
+        },
+    ])
     const dataSet = reactive([]);
-    function initDataSet () {
+    function initFigureDataSet () {
         for (const item of dataSetPre)
         {
             for (const jsonUrl of item.jsonUrls)
@@ -168,8 +182,9 @@ export const useCWAStore = defineStore("opendataCWA", () => {
         else
             return "dataset";
     }
-    async function fetchResource (forceUpdate = false)
+    async function fetchFigureResource (forceUpdate = false)
     {
+        /* query figure url from json */
         if (!forceUpdate && refreshTimeResource.value !== "Null") {
             console.log ("Last Resource RefreshTime: ", refreshTimeResource.value);
             return;
@@ -183,7 +198,7 @@ export const useCWAStore = defineStore("opendataCWA", () => {
 
         if (dataSet.length == 0)
         {
-            initDataSet();
+            initFigureDataSet();
         }
         const requests = dataSet.map((item) => {
             return axios.get(item.jsonUrl);
@@ -207,7 +222,44 @@ export const useCWAStore = defineStore("opendataCWA", () => {
             changeDownloadingState(false);
         });
     }
-    async function fetchFigures (forceUpdate = false) {
+    async function fetchRainfallData (forceUpdate = false)
+    {
+        /* data is from json, directly download it */
+        if (!forceUpdate && refreshTimeRainfall.value !== "Null") {
+            console.log ("Last Resource RefreshTime: ", refreshTimeRainfall.value);
+            return;
+        }
+        if (isRainfallDownloading.value) {
+            console.log ("There is a resource download process, skip this time...");
+            return;
+        }
+        isRainfallDownloading.value = true;
+        //changeDownloadingState(true);
+
+        const requests = dataSetRainfall.map((item) => {
+            return axios.get(item.jsonUrl);
+        })
+        await Promise.all(requests).then((responses) => {
+            responses.forEach((item, index) => {
+                const dataset = item.data.cwaopendata.dataset.Station;
+                dataSetRainfall[index].dataset.splice(0, dataSetRainfall[index].dataset.length);
+                dataset.forEach((item) => {
+                    dataSetRainfall[index].dataset.push(item)
+                })
+            })
+            refreshTimeRainfall.value = new Date().toLocaleString();
+            isRainfallDownloading.value = false;
+            //changeDownloadingState(false);
+        })
+        .catch(error => {
+            console.log ("Update dataset fail: ", error);
+            isRainfallDownloading.value = false;
+            //changeDownloadingState(false);
+        });
+    }
+    async function fetchFigures (forceUpdate = false)
+    {
+        /* query figures */
         if (!forceUpdate && refreshTimeFigures.value !== "Null") {
             console.log ("Last Figure RefreshTime: ", refreshTimeFigures.value);
             return;
@@ -218,8 +270,8 @@ export const useCWAStore = defineStore("opendataCWA", () => {
         }
         if (dataSet.length == 0)
         {
-            // fetchResource fail before???
-            await fetchResource();
+            // fetchFigureResource fail before???
+            await fetchFigureResource();
         }
         isFigureDownloading.value = true;
         changeDownloadingState(true);
@@ -242,9 +294,11 @@ export const useCWAStore = defineStore("opendataCWA", () => {
         });
     }
     async function initFetchSet (forceUpdate = false) {
-        await fetchResource (forceUpdate);
+        await fetchFigureResource (forceUpdate);
         await fetchFigures (forceUpdate);
+        await fetchRainfallData (forceUpdate);
     }
 
-    return {initFetchSet, refreshTimeFigures, dataSet, dataUrlSrc, fetchFigures}
+    return {initFetchSet, fetchFigures, fetchRainfallData,
+            refreshTimeFigures, dataSet, dataSetRainfall, dataUrlSrc, refreshTimeRainfall}
 })
