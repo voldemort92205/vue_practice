@@ -133,7 +133,7 @@ const handleRainfallLevel = () => {
     })
 
     rainfallLevelMapInfo.splice(0, rainfallLevelMapInfo.length);
-    reversedKey.forEach((key) => {
+    Object.keys(rainfallLevelClass).forEach((key) => {
         if (key === "無雨")
             return;
         rainfallLevelList[key].dataset.forEach((item) => {
@@ -153,7 +153,7 @@ const handleRainfallLevel = () => {
     })
 
     rainfallLevelProgressInfo.splice(0, rainfallLevelProgressInfo.length);
-    reversedKey.forEach((key) => {
+    Object.keys(rainfallLevelClass).forEach((key) => {
         rainfallLevelProgressInfo.push({
             "legend": key,
             "value": rainfallLevelList[key].dataset.length,
