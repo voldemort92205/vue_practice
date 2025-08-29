@@ -24,7 +24,6 @@ const props = defineProps ({
   mapLegends: Array,
 })
 
-
 const mapContainer = ref(null);
 let mapInstance = null;
 
@@ -72,6 +71,15 @@ const mapDataIcons = reactive([]);
 
 const refreshMap = () => {
   updateMapData();
+  if (mapInstance)
+  {
+    mapDataIcons.forEach((item) => {
+      if (mapInstance.hasLayer(item))
+      {
+        mapInstance.removeLayer(item);
+      }
+    })
+  }
   mapDataIcons.splice(0, mapDataIcons.length);
   mapData.value.forEach((item) => {
     const localIcon = L.circleMarker(item.latlon, {
