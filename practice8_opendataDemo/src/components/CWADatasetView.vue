@@ -7,6 +7,7 @@ import SimpleSourceView from './SimpleSourceView.vue';
 import SimpleLoadingEffect from './SimpleLoadingEffect.vue';
 import SimpleProgressBarCircle from './SimpleProgressBarCircle.vue';
 import SimpleCircleMap from './SimpleCircleMap.vue';
+import SimpleIconMap from './SimpleIconMap.vue';
 
 const cwaStore = useCWAStore();
 
@@ -167,17 +168,164 @@ const updateRainfallList = (timeStamp = "Null") => {
     handleRainfallLevel();
 };
 
+const weatherTypeSet = reactive([]);
+const weatherTypeProgressInfo = reactive([]);
+const getWeatherIcon = (weatherType) => {
+  const size = 17;
+  let iconHtml = "";
+
+  switch (weatherType) {
+    case "晴":
+      iconHtml = `<i class="fas fa-sun" style="color:#FFA500;font-size:${size}px;"></i>`;
+      break;
+
+    case "晴有靄":
+      iconHtml = `
+        <div style="position: relative;">
+          <i class="fas fa-smog" style="color:#B0BEC5;font-size:${size - 4}px; position:absolute; left:2px; top:14px;"></i>
+          <i class="fas fa-sun" style="color:#FFA500;font-size:${size}px;"></i>
+        </div>`;
+      break;
+
+    case "多雲":
+      iconHtml = `<i class="fas fa-cloud" style="color:#90A4AE;font-size:${size}px;"></i>`;
+      break;
+
+    case "陰":
+      iconHtml = `<i class="fas fa-cloud" style="color:#37474F;font-size:${size}px;"></i>`;
+      break;
+
+    case "多雲有靄":
+      iconHtml = `
+        <div style="position: relative;">
+          <i class="fas fa-smog" style="color:#B0BEC5;font-size:${size - 4}px; position:absolute; left:2px; top:14px;"></i>
+          <i class="fas fa-cloud" style="color:#90A4AE;font-size:${size}px;"></i>
+        </div>`;
+      break;
+
+    case "多雲有雨":
+      iconHtml = `<i class="fas fa-cloud-showers-heavy" style="color:#90A4AE;font-size:${size}px;"></i>`;
+      break;
+
+    case "多雲有雷雨":
+      iconHtml = `
+        <div style="position: relative;">
+          <i class="fas fa-bolt" style="color:#FF9800;font-size:${size - 4}px; position:absolute; left:6px; top:14px;"></i>
+          <i class="fas fa-cloud-showers-heavy" style="color:#90A4AE;font-size:${size}px;"></i>
+        </div>`;
+      break;
+
+    case "多雲有雷":
+      iconHtml = `
+        <div style="position: relative;">
+          <i class="fas fa-bolt" style="color:#FF9800;font-size:${size - 4}px; position:absolute; left:6px; top:14px;"></i>
+          <i class="fas fa-cloud" style="color:#90A4AE;font-size:${size}px;"></i>
+        </div>`;
+      break;
+
+    case "陰有雷雨":
+      iconHtml = `
+        <div style="position: relative;">
+          <i class="fas fa-bolt" style="color:#FF9800;font-size:${size - 4}px; position:absolute; left:6px; top:14px;"></i>
+          <i class="fas fa-cloud-showers-heavy" style="color:#37474F;font-size:${size}px;"></i>
+        </div>`;
+      break;
+
+    case "晴有雷":
+      iconHtml = `
+        <div style="position: relative;">
+          <i class="fas fa-bolt" style="color:#FF9800;font-size:${size - 6}px; position:absolute; left:10px; top:14px;"></i>
+          <i class="fas fa-sun" style="color:#FFA500;font-size:${size}px;"></i>
+        </div>`;
+      break;
+
+    case "陰有雷":
+      iconHtml = `
+        <div style="position: relative;">
+          <i class="fas fa-bolt" style="color:#FF9800;font-size:${size - 4}px; position:absolute; left:6px; top:14px;"></i>
+          <i class="fas fa-cloud" style="color:#37474F;font-size:${size}px;"></i>
+        </div>`;
+      break;
+
+    default:
+      iconHtml = `<i class="fas fa-question" style="color:#AAAAAA;font-size:${size}px;"></i>`;
+  }
+  return iconHtml;
+}
+
+const weatherType = ["晴","晴有靄", "晴有雷", "多雲", "多雲有靄",  "多雲有雨", "多雲有雷雨", "多雲有雷", "陰", "陰有雷雨", "陰有雷"]
+const weatherLegends = weatherType.map((kind) => {
+    return {
+        iconStr: getWeatherIcon(kind),
+        name: kind,
+    };
+});
+
+
+const handleWeatherData = () => {
+    const elements = new Set();
+
+    const typeStatistic = {};
+    weatherType.forEach((item) => {
+        typeStatistic[item] = {count: 0};
+    })
+
+    weatherTypeSet.splice(0, weatherTypeSet.length);
+    cwaStore.dataSetWeatherMonitor.dataset.forEach((item) => {
+        if (item.WeatherElement.Weather === "-99")
+        {
+            return;
+        }
+        const weatherKey = item.WeatherElement.Weather;
+        weatherTypeSet.push({
+            lat: item.GeoInfo.Coordinates[0].StationLatitude,
+            lon: item.GeoInfo.Coordinates[0].StationLongitude,
+            //weather: item.WeatherElement.Weather,
+            iconStr: getWeatherIcon(weatherKey),
+            iconSize: [30, 30],
+            name: item.GeoInfo.CountyName + "-" + item.GeoInfo.TownName,
+            message: item.GeoInfo.CountyName + "-" + item.StationName + ": " + item.WeatherElement.Weather,
+        });
+
+        typeStatistic[weatherKey].count += 1;
+        elements.add(item.WeatherElement.Weather);
+    });
+
+    let total = 0;
+    weatherType.forEach((item) => {
+        total += typeStatistic[item].count;
+    });
+
+    weatherTypeProgressInfo.splice(0, weatherTypeProgressInfo.length);
+    weatherType.forEach((item) => {
+        weatherTypeProgressInfo.push({
+            legend: item,
+            value: typeStatistic[item].count,
+            total: total,
+            color: "blue"
+        });
+    });
+    console.log (elements);
+}
+
+const updateWeatherMonitorList = (timeStamp = "Null") => {
+    handleWeatherData();
+}
+
 async function fetchDataSet(forceUpdate = false) {
     await cwaStore.initFetchSet(forceUpdate);
     updateFigureLists(cwaStore.refreshTimeFigures);
     updateRainfallList(cwaStore.refreshTimeRainfall);
+    updateWeatherMonitorList(cwaStore.refreshTimeWeatherMonitor);
 }
 
 async function fetechFigures() {
     await cwaStore.fetchFigures(true);
     await cwaStore.fetchRainfallData(true);
+    await cwaStore.fetchWeatherMonitorData(true);
     updateFigureLists(cwaStore.refreshTimeFigures);
     updateRainfallList(cwaStore.refreshTimeRainfall);
+    updateWeatherMonitorList(cwaStore.refreshTimeWeatherMonitor);
 }
 
 const refreshDataSet = (forceUpdate = false) => {
@@ -267,6 +415,38 @@ onMounted (() => {
                 </div>
             </div>
         </div>
+        <div class="my-5">
+            <div class="text-3xl font-semibold">
+                天氣狀態
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 py-5">
+                <div class="h-140 w-120 mx-auto ">
+                    <SimpleIconMap
+                        imageId="weather-icon"
+                        :dataset="weatherTypeSet"
+                        :mapCenterLat="23.6"
+                        :mapCenterLon="121.05"
+                        :mapZoom = 7
+                        :mapLegends="weatherLegends"
+                        class="border border-white"
+                    >
+                    </SimpleIconMap>
+                </div>
+
+                <div class="grid grid-cols-3 md:grid-cols-2 xl:grid-cols-4 mx-auto my-5">
+                    <SimpleProgressBarCircle
+                        v-for="(item, key) in weatherTypeProgressInfo" :key="key+'-progress-weather'"
+                        :imageId="item.legend + '-progressbar-circle-weather'"
+                        :currentProgress=item.value
+                        :totalProgress=item.total
+                        :title=item.legend
+                        :color=item.color
+                        class="mx-5 my-auto "
+                        >
+                    </SimpleProgressBarCircle>
+                </div>
+            </div>
+        </div>
         <div v-for="(items, key) in figureLists" :key="key" :id="key"
                 class="my-5">
             <div class="text-3xl font-semibold">
@@ -286,7 +466,6 @@ onMounted (() => {
         <SimpleSourceView :dataSrc="cwaStore.dataUrlSrc" />
     </div>
 </template>
-
 
 <style scoped>
 </style>

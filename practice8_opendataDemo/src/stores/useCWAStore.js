@@ -16,9 +16,10 @@ export const useCWAStore = defineStore("opendataCWA", () => {
     }
 
     const isRainfallDownloading = ref(false);
-
+    const isWeatherMonitorDownloading = ref(false);
 
     const refreshTimeRainfall = ref("Null");
+    const refreshTimeWeatherMonitor = ref("Null");
     const refreshTimeResource = ref("Null");
     const refreshTimeFigures = ref("Null");
 
@@ -145,6 +146,19 @@ export const useCWAStore = defineStore("opendataCWA", () => {
             dataset: reactive([]),
         },
     ])
+
+    const dataSetWeatherMonitor = reactive({
+        class: "氣象觀測資料",
+        webSrc: [
+            "https://data.gov.tw/dataset/9178",
+            "https://data.gov.tw/dataset/9176",
+        ],
+        jsonUrls: [
+            "https://opendata.cwa.gov.tw/fileapi/v1/opendataapi/O-A0003-001?Authorization=rdec-key-123-45678-011121314&format=JSON",
+            "https://opendata.cwa.gov.tw/fileapi/v1/opendataapi/O-A0001-001?Authorization=rdec-key-123-45678-011121314&format=JSON",
+        ],
+        dataset: reactive([]),
+    })
     const dataSet = reactive([]);
     function initFigureDataSet () {
         for (const item of dataSetPre)
@@ -257,6 +271,39 @@ export const useCWAStore = defineStore("opendataCWA", () => {
             //changeDownloadingState(false);
         });
     }
+    async function fetchWeatherMonitorData (forceUpdate = false)
+    {
+        /* data is from json, directly download it */
+        if (!forceUpdate && refreshTimeWeatherMonitor.value !== "Null") {
+            console.log ("Last Resource RefreshTime: ", refreshTimeWeatherMonitor.value);
+            return;
+        }
+        if (isWeatherMonitorDownloading.value) {
+            console.log ("There is a resource download process, skip this time...");
+            return;
+        }
+        isWeatherMonitorDownloading.value = true;
+
+        const requests = dataSetWeatherMonitor.jsonUrls.map((jsonUrl) => {
+            return axios.get(jsonUrl);
+        })
+
+        dataSetWeatherMonitor.dataset.splice(0, dataSetWeatherMonitor.dataset.length);
+        await Promise.all(requests).then((responses) => {
+            responses.forEach((item) => {
+                const dataset = item.data.cwaopendata.dataset.Station;
+                dataset.forEach((item) => {
+                    dataSetWeatherMonitor.dataset.push(item)
+                })
+            })
+            refreshTimeWeatherMonitor.value = new Date().toLocaleString();
+            isWeatherMonitorDownloading.value = false;
+        })
+        .catch(error => {
+            console.log ("Update dataset fail: ", error);
+            isWeatherMonitorDownloading.value = false;
+        });
+    }
     async function fetchFigures (forceUpdate = false)
     {
         /* query figures */
@@ -297,8 +344,11 @@ export const useCWAStore = defineStore("opendataCWA", () => {
         await fetchFigureResource (forceUpdate);
         await fetchFigures (forceUpdate);
         await fetchRainfallData (forceUpdate);
+        await fetchWeatherMonitorData (forceUpdate);
     }
 
-    return {initFetchSet, fetchFigures, fetchRainfallData,
-            refreshTimeFigures, dataSet, dataSetRainfall, dataUrlSrc, refreshTimeRainfall}
+    return {initFetchSet, fetchFigures, fetchRainfallData, fetchWeatherMonitorData,
+            refreshTimeFigures, refreshTimeRainfall, refreshTimeWeatherMonitor,
+            dataSet, dataSetRainfall, dataUrlSrc, dataSetWeatherMonitor
+    }
 })
