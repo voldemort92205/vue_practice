@@ -36,16 +36,11 @@ let mapInstance = null;
 
 // pre-defined variables
 // TODO: support more colors
-const mapData = ref([]);
-const iconObjs = ref({});
+const mapData = reactive([]);
+const iconObjs = reactive({});
 
 const updateMapData = () => {
-  // use input data...
-  for (const key in iconObjs)
-  {
-    delete iconObjs[key];
-  }
-  mapData.value.splice(0, mapData.value.length);
+  mapData.splice(0, mapData.length);
   props.dataset.forEach((item) => {
     const obj = {};
     obj["latlon"] = [item.lat, item.lon];
@@ -59,23 +54,8 @@ const updateMapData = () => {
       });
     }
     obj["iconDiv"] = iconObjs[iconStr];
-    /*
-    obj["color"] = item.color;
-    obj["radius"] = item.radius;
-
-    obj["fill"] = false;
-    obj["fillColor"] = "white";
-    if (item.fillColor) {
-      obj["fill"] = true;
-      obj["fillColor"] = item.fillColor;
-    }
-
-    obj["weight"] = item.weight;
-
-    // assume there is message
-    */
     obj["message"] = item.message;
-    mapData.value.push(obj);
+    mapData.push(obj);
   })
 };
 
@@ -89,7 +69,6 @@ const center = ref([props.mapCenterLat, props.mapCenterLon]);
 const mapDataIcons = reactive([]);
 
 const refreshMap = () => {
-  updateMapData();
   if (mapInstance)
   {
     mapDataIcons.forEach((item) => {
@@ -100,26 +79,16 @@ const refreshMap = () => {
     })
   }
   mapDataIcons.splice(0, mapDataIcons.length);
-  mapData.value.forEach((item) => {
+
+  updateMapData();
+
+  mapData.forEach((item) => {
     const localIcon = L.marker(item.latlon, {
       icon: item.iconDiv,
     })
     .bindTooltip(item.message).openTooltip()
-    .addTo(mapInstance)
-    /*
-    const localIcon = L.circleMarker(item.latlon, {
-      radius: item.radius,
-      stroke: true,
-      color: item.color,
-      fillColor: item.fillColor,
-      fill: item.fill,
-      weight: item.weight,
-      opacity: 0.9,
-      fillOpacity: 0.9,
-    })
-    .bindTooltip(item.message).openTooltip()
     .addTo(mapInstance);
-    */
+
     mapDataIcons.push(localIcon);
   });
 }
