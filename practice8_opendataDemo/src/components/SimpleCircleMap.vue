@@ -16,6 +16,10 @@ const props = defineProps ({
     type: Number,
     default: 9,
   },
+  zoomInRadius: {
+    type: Object,
+    default: {},
+  },
   mapCircleData: Array,
   mapId: {
     type: String,
@@ -38,11 +42,14 @@ const colorMap = {
 const mapData = ref([])
 const updateMapData = () => {
   // use input data...
+  const currentZoom = mapInstance.getZoom();
+  const anotherZoom = currentZoom in props.zoomInRadius;
+
   mapData.value = props.mapCircleData.map((item) => {
     const obj = {};
     obj["latlon"] = [item.lat, item.lon];
     obj["color"] = item.color;
-    obj["radius"] = item.radius;
+    obj["radius"] = anotherZoom ? props.zoomInRadius[currentZoom]: item.radius;
 
     obj["fill"] = false;
     obj["fillColor"] = "white";
@@ -70,17 +77,17 @@ const center = ref([props.mapCenterLat, props.mapCenterLon]);
 const mapDataIcons = reactive([]);
 
 const refreshMap = () => {
-  updateMapData();
   if (mapInstance)
   {
     mapDataIcons.forEach((item) => {
       if (mapInstance.hasLayer(item))
       {
-        mapInstance.removeLayer(item);
+        item.remove();
       }
     })
   }
   mapDataIcons.splice(0, mapDataIcons.length);
+  updateMapData();
   mapData.value.forEach((item) => {
     const localIcon = L.circleMarker(item.latlon, {
       radius: item.radius,
@@ -115,6 +122,8 @@ const initMap = () => {
     maxZoom: 19,
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
   }).addTo(mapInstance);
+
+  mapInstance.on("zoomend", refreshMap);
 }
 
 onMounted (() => {

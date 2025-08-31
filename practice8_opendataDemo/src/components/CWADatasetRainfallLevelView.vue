@@ -58,6 +58,16 @@ const rainfallLevelMapInfo = reactive([]);
 const rainfallLevelProgressInfo = reactive([]);
 const refreshTime = ref("Null");
 
+const zoomInRadius = reactive({
+    9: 6,
+    10: 7,
+    11: 7,
+    12: 9,
+    13: 9,
+    14: 10,
+    15: 11,
+})
+
 const updatDataset = () => {
     const rainfallKey = "Past24hr";
     const remoteData = props.dataset;
@@ -132,7 +142,6 @@ const updatDataset = () => {
         })
     });
 
-
     refreshTime.value = props.refreshTime;
 }
 
@@ -165,6 +174,7 @@ const isCommentOpen = ref(false);
                     :mapCircleData=rainfallLevelMapInfo
                     :mapLegends = rainfallLevelLegend
                     mapId = "rainfallLevelContainer"
+                    :zoomInRadius = zoomInRadius
                     class="border border-white"
                     >
                 </SimpleCircleMap>
