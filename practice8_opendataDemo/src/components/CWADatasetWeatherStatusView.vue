@@ -176,6 +176,7 @@ const updatDataset = () => {
         });
     });
 
+    weatherLegends.splice(0, weatherLegends.length);
     // add known icons
     weatherType.forEach((key) => {
       weatherLegends.push({
