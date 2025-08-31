@@ -144,6 +144,8 @@ watch (() => props, () => {
     updatDataset();
 }, {deep: true});
 
+const isCommentOpen = ref(false);
+
 </script>
 
 <template>
@@ -183,12 +185,44 @@ watch (() => props, () => {
         </div>
 
         <div class="my-5 text-left flex flex-col justify-center">
-            <div class="w-150 mx-auto">
-            <p>說明: 降雨強度為以過去 24hr 的累積雨量做分類。分類如下</p>
-            <ul class="list-disc list-inside">
-                <li v-for="desc in rainfallLevelDesc">{{ desc }}</li>
-            </ul>
+            <div class="mx-auto w-100">
+                <div class="mx-auto text-center text-lg hover:bg-white/60 rounded cursor-pointer"
+                     type="button" @click="isCommentOpen = !isCommentOpen"
+                >
+                        注1: 雨量定義
+                </div>
+                <transition name="expand-fade">
+                <div v-show="isCommentOpen">
+                    <div class="">降雨強度為以過去 24hr 的累積雨量做分類。</div>
+                    <ul class="list-disc list-inside">
+                        <li v-for="desc in rainfallLevelDesc"
+                            class="hover:bg-white/70 cursor-pointer rounded">
+                            {{ desc }}
+                        </li>
+                    </ul>
+                </div>
+                </transition>
             </div>
         </div>
     </div>
 </template>
+
+<style scoped>
+.expand-fade-enter-active,
+.expand-fade-leave-active {
+  transition: all 1s ease;
+  overflow: hidden;
+}
+
+.expand-fade-enter-from,
+.expand-fade-leave-to {
+  opacity: 0;
+  max-height: 0;
+}
+
+.expand-fade-enter-to,
+.expand-fade-leave-from {
+  opacity: 1;
+  max-height: 500px; /* larger than the content */
+}
+</style>
