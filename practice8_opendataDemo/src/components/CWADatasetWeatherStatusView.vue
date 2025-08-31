@@ -80,6 +80,13 @@ const getWeatherIcon = (weatherType) => {
         </div>`;
       break;
 
+    case "陰有雨":
+      iconHtml = `
+        <div style="position: relative;">
+          <i class="fas fa-cloud-showers-heavy" style="color:#37474F;font-size:${size}px;"></i>
+        </div>`;
+      break;
+
     case "晴有雷":
       iconHtml = `
         <div style="position: relative;">
@@ -97,7 +104,7 @@ const getWeatherIcon = (weatherType) => {
       break;
 
     default:
-      iconHtml = `<i class="fas fa-question" style="color:#AAAAAA;font-size:${size}px;"></i>`;
+      iconHtml = `<i class="fas fa-question" style="color:#CC0000;font-size:${size}px;"></i>`;
   }
   return iconHtml;
 }
@@ -117,13 +124,8 @@ const getWeatherColor = (weatherType) => {
     }
 }
 
-const weatherType = ["晴", "晴有靄", "晴有雷", "多雲", "多雲有靄",  "多雲有雨", "多雲有雷雨", "多雲有雷", "陰", "陰有雷雨", "陰有雷"]
-const weatherLegends = weatherType.map((kind) => {
-    return {
-        iconStr: getWeatherIcon(kind),
-        name: kind,
-    };
-});
+const weatherType = ["晴", "晴有靄", "晴有雷", "多雲", "多雲有靄",  "多雲有雨", "多雲有雷雨", "多雲有雷", "陰", "陰有雨", "陰有雷雨", "陰有雷"];
+const weatherLegends = reactive([]);
 
 const updatDataset = () => {
     const typeStatistic = {};
@@ -148,30 +150,49 @@ const updatDataset = () => {
             message: item.GeoInfo.CountyName + "-" + item.StationName + ": " + item.WeatherElement.Weather,
         });
 
-        if (weatherType.includes(weatherKey))
+        if (weatherKey in typeStatistic)
         {
             typeStatistic[weatherKey].count += 1;
         }
         else
         {
             console.log ("Unspport type: ", weatherKey);
+            typeStatistic[weatherKey] = {count: 1,}
         }
     });
 
     let total = 0;
-    weatherType.forEach((item) => {
-        total += typeStatistic[item].count;
+    Object.keys(typeStatistic).forEach((key) => {
+        total += typeStatistic[key].count;
     });
 
     weatherTypeProgressInfo.splice(0, weatherTypeProgressInfo.length);
-    weatherType.forEach((item) => {
+    Object.keys(typeStatistic).forEach((key) => {
         weatherTypeProgressInfo.push({
-            legend: item,
-            value: typeStatistic[item].count,
+            legend: key,
+            value: typeStatistic[key].count,
             total: total,
-            color: getWeatherColor(item)
+            color: getWeatherColor(key)
         });
     });
+
+    // add known icons
+    weatherType.forEach((key) => {
+      weatherLegends.push({
+        iconStr: getWeatherIcon(key),
+        name: key,
+      })
+    });
+    // add unknonwn icons
+    Object.keys(typeStatistic).forEach((key) => {
+      if (! weatherType.includes(key))
+      {
+        weatherLegends.push({
+          iconStr: getWeatherIcon(key),
+          name: key,
+        })
+      }
+    })
 
     refreshTime.value = props.refreshTime;
 }
