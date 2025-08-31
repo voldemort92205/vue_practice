@@ -45,11 +45,15 @@ p {
   position: fixed;
   z-index: -10;
 
-  /* Photo by <a href="https://unsplash.com/@jack_scorner?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Thomas Griesbeck</a>
-    on <a href="https://unsplash.com/photos/silhouette-of-pine-trees-photo-BS-Uxe8wU5Y?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Unsplash</a>
+  /*
+    https://unsplash.com/photos/white-clouds-on-blue-sky-_rBa5RKc7vE?utm_content=creditShareLink&utm_medium=referral&utm_source=unsplash
   */
   background: url("/src/background_image.jpg");
   background-size: cover;
+}
+
+svg text {
+  @apply fill-current;
 }
 
 @layer base {
@@ -57,6 +61,9 @@ p {
     @apply text-5xl mb-3;
   }
   div {
+    @apply font-mono text-slate-800 dark:text-slate-200;
+  }
+  svg text {
     @apply font-mono text-slate-800 dark:text-slate-200;
   }
 }

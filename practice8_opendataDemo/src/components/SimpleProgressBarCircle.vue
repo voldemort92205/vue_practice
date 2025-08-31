@@ -95,7 +95,7 @@ const dashOffset = computed(() => {
                     y="50%"
                     text-anchor="middle"
                     dominant-baseline="central"
-                    class="circle-text"
+                    class=""
                     >
                     {{ props.currentProgress }}
                 </text>
@@ -109,8 +109,4 @@ const dashOffset = computed(() => {
   display: block;
 }
 
-.circle-text {
-  font-size: 1rem;
-  fill: #202020;
-}
 </style>

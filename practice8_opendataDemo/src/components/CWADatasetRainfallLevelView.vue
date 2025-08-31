@@ -186,7 +186,7 @@ const isCommentOpen = ref(false);
 
         <div class="my-5 text-left flex flex-col justify-center">
             <div class="mx-auto w-100">
-                <div class="mx-auto text-center text-lg hover:bg-white/60 rounded cursor-pointer"
+                <div class="mx-auto text-center text-lg hover:bg-slate-200 rounded cursor-pointer hover:dark:bg-slate-500"
                      type="button" @click="isCommentOpen = !isCommentOpen"
                 >
                         注1: 雨量定義
@@ -196,7 +196,7 @@ const isCommentOpen = ref(false);
                     <div class="">降雨強度為以過去 24hr 的累積雨量做分類。</div>
                     <ul class="list-disc list-inside">
                         <li v-for="desc in rainfallLevelDesc"
-                            class="hover:bg-white/70 cursor-pointer rounded">
+                            class="cursor-pointer rounded  hover:bg-slate-200 hover:dark:bg-slate-500">
                             {{ desc }}
                         </li>
                     </ul>
