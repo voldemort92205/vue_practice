@@ -40,7 +40,14 @@ const mapData = reactive([]);
 const iconObjs = reactive({});
 
 const updateMapData = () => {
+  if (! mapInstance)
+  {
+    console.log ("map instance is not initialized...");
+    return ;
+  }
+
   mapData.splice(0, mapData.length);
+
   props.dataset.forEach((item) => {
     const obj = {};
     obj["latlon"] = [item.lat, item.lon];
@@ -74,7 +81,8 @@ const refreshMap = () => {
     mapDataIcons.forEach((item) => {
       if (mapInstance.hasLayer(item))
       {
-        mapInstance.removeLayer(item);
+        item.remove();
+
       }
     })
   }
