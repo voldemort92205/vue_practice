@@ -26,6 +26,11 @@ const props = defineProps ({
     required: true,
   },
   mapLegends: Array,
+  onClick: {
+    type: Function,
+    default: null,
+
+  }
 })
 
 const mapContainer = ref(null);
@@ -62,6 +67,8 @@ const updateMapData = () => {
 
     // assume there is message
     obj["message"] = item.message;
+
+    obj["original"] = item;
 
     return obj;
   })
@@ -101,6 +108,14 @@ const refreshMap = () => {
     })
     .bindTooltip(item.message).openTooltip()
     .addTo(mapInstance);
+
+
+    if (props.onClick)
+    {
+      localIcon.on("click", (e) => {
+        props.onClick(item.original);
+      })
+    }
 
     mapDataIcons.push(localIcon);
   });

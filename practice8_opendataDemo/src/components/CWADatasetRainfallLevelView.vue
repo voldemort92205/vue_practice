@@ -118,15 +118,15 @@ const updatDataset = () => {
             return;
         rainfallLevelList[key].dataset.forEach((item) => {
             const obj = {};
-
             obj["lat"] = item.GeoInfo.Coordinates[0].StationLatitude;
             obj["lon"] = item.GeoInfo.Coordinates[0].StationLongitude;
             obj["fillColor"] = rainfallLevelList[key].color;
             obj["color"] = rainfallLevelList[key].color;
             obj["color"] = "black"
-            obj["message"] = item.GeoInfo.CountyName + "/" + item.GeoInfo.TownName + " (rainfall: " + item.y + ")";
+            obj["message"] = item.GeoInfo.CountyName + "/" + item.StationName + " (rainfall: " + item.y + ")";
             obj["radius"] = 5;
             obj["weight"] = 1;
+            obj["StationId"] = item.StationId;
 
             rainfallLevelMapInfo.push(obj)
         })
@@ -147,13 +147,69 @@ const updatDataset = () => {
 
 onMounted (() => {
     updatDataset();
+    initStationInfo();
 });
 
 watch (() => props, () => {
     updatDataset();
+    refreshSelectStation();
 }, {deep: true});
 
 const isCommentOpen = ref(false);
+
+const isSelectStationOpen = ref(false);
+const clickStation = reactive([]);
+const selectStationId = ref(null);
+const initStationInfo = () => {
+    clickStation.splice(0, clickStation.length);
+    clickStation.push("測站: 請選擇");
+}
+
+const doUpdateSelectStation = (statInfo = undefined) => {
+    if (statInfo === undefined) return;
+
+    clickStation.splice(0, clickStation.length);
+    clickStation.push("測站: " + statInfo.GeoInfo.CountyName
+                        + "/" + statInfo.GeoInfo.TownName
+                        + ": " + statInfo.StationName
+                        + " (" + statInfo.StationId + ")");
+    clickStation.push("觀測時間: " + statInfo.ObsTime.DateTime);
+    clickStation.push("測站位置: (" + statInfo.GeoInfo.Coordinates[0].StationLongitude
+                            + " E, " + statInfo.GeoInfo.Coordinates[0].StationLatitude+ " N)");
+    clickStation.push("現在降雨量: " + statInfo.RainfallElement.Now.Precipitation + " mm");
+    clickStation.push("過去10分鐘: " + statInfo.RainfallElement.Past10Min.Precipitation + " mm/ 10 min");
+    clickStation.push("過去12小時: " + statInfo.RainfallElement.Past12hr.Precipitation + " mm/ 12 hr");
+    clickStation.push("過去24小時: " + statInfo.RainfallElement.Past24hr.Precipitation + " mm/ 24 hr");
+    clickStation.push("過去2天: " + statInfo.RainfallElement.Past2days.Precipitation + " mm/ 2 day");
+    clickStation.push("過去3天: " + statInfo.RainfallElement.Past3days.Precipitation + " mm/ 3 day");
+    isSelectStationOpen.value = true;
+}
+
+const refreshSelectStation = () => {
+    if (selectStationId.value === null)
+    {
+        return;
+    }
+
+    // filter by clickFunction, so we assume its output is 1
+    const statSelected = props.dataset.filter((item) => item.StationId === selectStationId.value)[0];
+    doUpdateSelectStation(statSelected);
+
+}
+
+const clickFunction = (stat) => {
+    const statSelected = props.dataset.filter((item) => item.StationId === stat.StationId);
+    if (statSelected.length !== 1)
+    {
+        console.log ("Should be 1 (", statSelected.length, ")");
+        return;
+    }
+
+    const statInfo = statSelected[0];
+    doUpdateSelectStation (statInfo);
+
+    selectStationId.value = statInfo.StationId;
+}
 
 </script>
 
@@ -164,6 +220,28 @@ const isCommentOpen = ref(false);
         </div>
         <div class="text-lg">
             Last Refresh Time: {{ refreshTime }}
+        </div>
+                <div class="my-5 text-left flex flex-col justify-center">
+            <div class="mx-auto w-100">
+                <div class="mx-auto text-center text-lg hover:bg-slate-200 rounded cursor-pointer hover:dark:bg-slate-500 py-1"
+                     type="button" @click="isSelectStationOpen = !isSelectStationOpen"
+                >
+                        測站資料 (請點地圖)
+                        <i class="fa-solid fa-chevron-up border rounded" v-if="isSelectStationOpen"></i>
+                        <i class="fa-solid fa-chevron-down border rounded" v-else></i>
+
+                </div>
+                <transition name="expand-fade">
+                <div v-show="isSelectStationOpen">
+                    <ul class="list-disc list-inside">
+                        <li v-for="desc in clickStation"
+                            class="cursor-pointer rounded hover:bg-slate-200 hover:dark:bg-slate-500">
+                            {{ desc }}
+                        </li>
+                    </ul>
+                </div>
+                </transition>
+            </div>
         </div>
         <div class="grid grid-cols-1 lg:grid-cols-2 py-5">
             <div class="h-140 w-120 mx-auto">
@@ -176,6 +254,7 @@ const isCommentOpen = ref(false);
                     mapId = "rainfallLevelContainer"
                     :zoomInRadius = zoomInRadius
                     class="border border-white"
+                    :onClick="clickFunction"
                     >
                 </SimpleCircleMap>
             </div>
