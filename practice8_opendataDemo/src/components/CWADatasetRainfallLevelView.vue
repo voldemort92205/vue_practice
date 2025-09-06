@@ -211,6 +211,54 @@ const clickFunction = (stat) => {
     selectStationId.value = statInfo.StationId;
 }
 
+// update map by clicking progress circle
+const levelTypeHandleClick = reactive({})
+Object.keys(rainfallLevelClass).forEach((key) => {
+    levelTypeHandleClick[key] = {
+        "click": false,
+    };
+})
+const handleSelectType = (clickType) => {
+    if (!(clickType in levelTypeHandleClick))
+    {
+        console.log ("Not support type: ", clickType);
+        return ;
+    }
+    const isOneSelect = !levelTypeHandleClick[clickType].click;
+    Object.keys(rainfallLevelClass).forEach((key) => {
+        levelTypeHandleClick[key].click = false;
+    })
+    levelTypeHandleClick[clickType].click = isOneSelect;
+
+    if (isOneSelect)
+    {
+        rainfallLevelMapInfo.splice(0, rainfallLevelMapInfo.length);
+        Object.keys(rainfallLevelClass).forEach((key) => {
+            if (key !== clickType)
+                return;
+            rainfallLevelList[key].dataset.forEach((item) => {
+                const obj = {};
+                obj["lat"] = item.GeoInfo.Coordinates[0].StationLatitude;
+                obj["lon"] = item.GeoInfo.Coordinates[0].StationLongitude;
+                obj["fillColor"] = rainfallLevelList[key].color;
+                obj["color"] = rainfallLevelList[key].color;
+                obj["color"] = "black"
+                obj["message"] = item.GeoInfo.CountyName + "/" + item.StationName + " (rainfall: " + item.y + ")";
+                obj["radius"] = 5;
+                obj["weight"] = 1;
+                obj["StationId"] = item.StationId;
+
+                rainfallLevelMapInfo.push(obj)
+            })
+        })
+    }
+    else
+    {
+        // show original points
+        updatDataset();
+    }
+}
+
 </script>
 
 <template>
@@ -268,6 +316,8 @@ const clickFunction = (stat) => {
                     :title=item.legend
                     :color=item.color
                     class="mx-5 my-auto "
+                    @click="handleSelectType(item.legend)"
+                    :class="[levelTypeHandleClick[item.legend].click ? 'bg-slate-200 rounded dark:bg-slate-800' : '']"
                     >
                 </SimpleProgressBarCircle>
             </div>
