@@ -148,11 +148,13 @@ const updatDataset = () => {
 onMounted (() => {
     updatDataset();
     initStationInfo();
+    resetHandleClick();
 });
 
 watch (() => props, () => {
     updatDataset();
     refreshSelectStation();
+    resetHandleClick();
 }, {deep: true});
 
 const isCommentOpen = ref(false);
@@ -218,6 +220,11 @@ Object.keys(rainfallLevelClass).forEach((key) => {
         "click": false,
     };
 })
+const resetHandleClick = () => {
+    Object.keys(rainfallLevelClass).forEach((key) => {
+        levelTypeHandleClick[key].click = false;
+    })
+}
 const handleSelectType = (clickType) => {
     if (!(clickType in levelTypeHandleClick))
     {
@@ -225,9 +232,7 @@ const handleSelectType = (clickType) => {
         return ;
     }
     const isOneSelect = !levelTypeHandleClick[clickType].click;
-    Object.keys(rainfallLevelClass).forEach((key) => {
-        levelTypeHandleClick[key].click = false;
-    })
+    resetHandleClick();
     levelTypeHandleClick[clickType].click = isOneSelect;
 
     if (isOneSelect)
