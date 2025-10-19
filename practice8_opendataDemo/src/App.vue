@@ -10,19 +10,19 @@ const navLists = reactive([
     linkUrl: "/"
   },
   {
-    name: "Air Quality",
+    name: "AirQuality",
     linkUrl: "/airquality"
   },
   {
-    name: "YouBike - Taipei",
+    name: "YouBike",
     linkUrl: "/youbikemap",
   },
   {
-    name: "CWA Dataset",
+    name: "Weather",
     linkUrl: "/cwadataset",
   },
   {
-    name: "Financial Dataset",
+    name: "FinancialIndex",
     linkUrl: "/financialview",
   }
 ])

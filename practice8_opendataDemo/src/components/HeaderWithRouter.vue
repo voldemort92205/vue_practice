@@ -1,5 +1,8 @@
 <script setup>
-import { ref } from 'vue'
+import { onMounted, ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
+import { useWindowSize } from '@vueuse/core';
+
 const props = defineProps ({
     headerMessage: {
         type: String,
@@ -15,6 +18,27 @@ const showMenu = ref(false);
 const menuBarChange = () => {
     showMenu.value = !showMenu.value;
 }
+
+// highlight current page
+const route = useRoute();
+const currentPath = ref("");
+watch(() => route.path, (newPath) => {
+    currentPath.value = newPath;
+});
+
+// handle window size
+const {width, height} = useWindowSize();
+const isLargeSize = ref(true);
+watch (() => width.value, () => {
+    checkWindowSize();
+})
+const checkWindowSize = () => {
+    isLargeSize.value = width.value >= 1072;
+}
+
+onMounted (() => {
+    checkWindowSize();
+})
 </script>
 
 <template>
@@ -30,7 +54,20 @@ const menuBarChange = () => {
                 {{ props.headerMessage }}
             </RouterLink>
         </div>
-        <div class="my-auto absolute right-0 pr-6">
+
+        <div class="my-auto flex justify-center" v-if="isLargeSize">
+            <!-- large window size -->
+            <RouterLink v-for="item in props.routerInfo"
+                    :to="item.linkUrl" :key="item.name"
+                    class="flex flex-row px-1 py-1 text-lg hover:bg-slate-200
+                            rounded hover:dark:bg-slate-600 mx-1"
+                    :class="[currentPath === item.linkUrl? 'text-red-900' : '' ]"
+            >
+                {{ item.name }}
+            </RouterLink>
+        </div>
+        <div class="my-auto absolute right-0 pr-6" v-if="!isLargeSize">
+            <!-- small window size -->
             <button type="button" style="cursor: pointer;"
                     class="h-15 w-15 my-auto text-xl"
                     @click="menuBarChange">
@@ -38,7 +75,7 @@ const menuBarChange = () => {
             </button>
         </div>
     </header>
-    <div v-if="showMenu"
+    <div v-if="showMenu && !isLargeSize"
         class="sticky top-0 h-screen bg-white/60 dark:bg-zinc-800/60"
         @click="menuBarChange">
         <div class="w-2/4 mx-auto flex flex-col justify-center border bg-white dark:bg-zinc-800"
