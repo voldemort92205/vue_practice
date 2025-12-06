@@ -37,9 +37,9 @@ const centerLon = ref(121.53);
 const mapZoom = ref(12);
 
 const getPointColor = (item) => {
-    if (item["available_rent_bikes"] > 10) {
+    if (item["availableRent"] > 10) {
         return "green";
-    } else if (item["available_rent_bikes"] > 0) {
+    } else if (item["availableRent"] > 0) {
         return "orange";
     } else {
         return "red";
@@ -48,11 +48,11 @@ const getPointColor = (item) => {
 
 const encapsulateData = (item) => {
     const output = {};
-    output["lat"] = item.latitude;
-    output["lon"] = item.longitude;
+    output["lat"] = item.lat;
+    output["lon"] = item.lon;
 
     var message = item.sna.replace('YouBike2.0_', '')
-                    + "站: " + item.available_rent_bikes;
+                    + "站: " + item.availableRent;
     const pointColor = getPointColor(item);
     output["message"] = message;
     output["fillColor"] = pointColor;
@@ -111,8 +111,8 @@ const handleDropdownData = () => {
 const updateSelectInfo = (item) => {
     stationInfo.value = item["sarea"] + " - " + item["sna"] +
         '(' + item["ar"]+ ')';
-    availableBorrow.value = item["available_rent_bikes"];
-    availableReturn.value = item["available_return_bikes"];
+    availableBorrow.value = item["availableRent"];
+    availableReturn.value = item["availableReturn"];
     lastUpdateTimeStamp.value = item["updateTime"];
 };
 
