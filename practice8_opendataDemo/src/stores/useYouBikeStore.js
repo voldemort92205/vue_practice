@@ -6,9 +6,10 @@ export const useYoubikeStore = defineStore("youbikeAQI", () => {
     const dataUrlSrc = "https://data.taipei/dataset/detail?id=c6bc8aed-557d-41d5-bfb1-8da24f78f2fb";
     const isDownloading = ref(false);
 
+    const backendURLPrefix = import.meta.env.VITE_API_URL;
     // Download from local backend service
-    const taipeiYoubikeUrl = "http://localhost:3000/bikeInfo/TaipeiCity"
-    const taichungYoubikeUrl = "http://localhost:3000/bikeInfo/Taichung";
+    const taipeiYoubikeUrl = backendURLPrefix + "/bikeInfo/TaipeiCity"
+    const taichungYoubikeUrl = backendURLPrefix + "/bikeInfo/Taichung";
 
     const refreshTime = ref("Null");
     const dataSet = reactive([]);
